@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+    <head>
+        <title>註冊</title>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+        <link rel="stylesheet" href="css/register.css" type="text/css" media="all" />
+    </head>
+    <body>
+        <h1>註冊</h1>
+        <form method="POST" action="/register_process">
+            <p>帳號</p>
+            <input name="account" type="text">
+            <p>密碼</p>
+            <input name="password" type="password">
+            <p>請再次輸入密碼</p>
+            <input name="againPassword" type="password">
+            <p id="checkPassword">密碼不符</p>
+            <p>姓名</p>
+            <input name="name" type="text">
+            <p>身分證字號</p>
+            <input name="ssid" type="text" placeholder="ex:E123456789" pattern="^[A-Z]\d{9}$">
+            <p>Email</p>
+            <input name="email" type="email">
+            <p>身分</p>
+            <select name="status">
+                <option value="none" selected>請選擇身分</option>
+            </select>
+            <button type="submit">提交</button>
+        </form>
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<script src="js/register.js"></script>
+    </body>
+</html>
