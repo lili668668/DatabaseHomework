@@ -7,9 +7,10 @@
     </head>
     <body>
         <h1>註冊</h1>
-        <form method="POST" action="/register_process">
+        <form method="POST" action="/register_process" id="test">
             <p>帳號</p>
-            <input name="account" type="text">
+            <input v-model.trim="message" name="account" type="text">
+            <p>test: {{ message }}</p>
             <p>密碼</p>
             <input name="password" type="password">
             <p>請再次輸入密碼</p>
@@ -28,6 +29,7 @@
             <button type="submit">提交</button>
         </form>
         <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="https://unpkg.com/vue/dist/vue.js"></script>
         <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 		<script src="js/register.js"></script>
     </body>
