@@ -7,23 +7,22 @@
     </head>
     <body>
         <h1>註冊</h1>
-        <form method="POST" action="/register_process" id="test">
+        <form method="POST" action="/register_process" id="form">
             <p>帳號</p>
-            <input v-model.trim="message" name="account" type="text">
-            <p>test: {{ message }}</p>
+            <input id="account" name="account" type="text">
             <p>密碼</p>
-            <input name="password" type="password">
+            <input name="password" id="password" type="password">
             <p>請再次輸入密碼</p>
-            <input name="againPassword" type="password">
+            <input name="againPassword" id="againPassword" type="password">
             <p id="checkPassword">密碼不符</p>
             <p>姓名</p>
-            <input name="name" type="text">
+            <input name="name" id="name" type="text">
             <p>身分證字號</p>
-            <input name="ssid" type="text" placeholder="ex:E123456789" pattern="^[A-Z]\d{9}$">
+            <input name="ssid" id="ssid" type="text" placeholder="ex:E123456789" pattern="^[A-Z]\d{9}$">
             <p>Email</p>
-            <input name="email" type="email">
+            <input name="email" id="email" type="email">
             <p>身分</p>
-            <select name="status">
+            <select name="status" id="status">
                 <option value="none" selected>請選擇身分</option>
             </select>
             <button type="submit">提交</button>
