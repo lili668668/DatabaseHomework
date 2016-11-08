@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A Homework of Database",
   "main": "server.js",
+  "config": { "dbUser": "", "dbPasswd": "", "dbName": "", "dbServer": "localhost", "dbPort": "1433" },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
