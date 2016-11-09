@@ -1,3 +1,4 @@
+var socket = io();
 $(function(){
     setCheck("#account", function(){
         return $("#account").val().length < 1;
@@ -27,10 +28,12 @@ $(function(){
 
 
     $("#status").change(function() {
-        if ( $( "#status" ).val() == "none" ) {
+        if ( $( this ).val() == "none" ) {
             $("#checkStatus").text("請選擇一個身分");
+            $("#other").empty();
         } else {
             $("#checkStatus").text("");
+            socket.emit("status", $( this ).val());
         }
         checkSubmit();
     })
@@ -69,3 +72,14 @@ function checkSubmit() {
     }
 }
 
+socket.on("re_status", function(msg){
+    $("#other").empty();
+    var other = msg["other"];
+    var other_name = msg["other_name"];
+    for (var cnt = 0;cnt < other.length;cnt++) {
+        var str1 = `<p>${other_name[cnt]}</p>`;
+        var str2 = `<input type="text" id="${other}" name="${other}">`
+        $("#other").append(str1);
+        $("#other").append(str2);
+    }
+});

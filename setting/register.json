@@ -1,8 +1,24 @@
 {
     "memebers": [
-        {"status": "professor", "name": "教授"},
-        {"status": "TA", "name": "助教"},
-        {"status": "student", "name": "學生"},
-        {"status": "order_man", "name": "銷售員"}
+        {"status": "professor", "name": "教授", "other":[
+            "proid", "office", "grade"
+        ], "other_name":[
+            "教授編號", "辦公室編號", "職等"
+        ]},
+        {"status": "TA", "name": "助教", "other":[
+            "taid", "room"
+        ], "other_name":[
+            "助教編號", "研究室"
+        ]},
+        {"status": "student", "name": "學生", "other":[
+            "sid", "class"
+        ], "other_name": [
+            "學生編號", "班級"
+        ]},
+        {"status": "order_man", "name": "銷售員", "other":[
+            "omid"
+        ], "other_name": [
+            "銷售員編號"
+        ]}
     ]
 }

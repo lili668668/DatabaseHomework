@@ -40,6 +40,19 @@ app.get('/register', function(request, response){
 });
 
 io.on('connection', function(socket){
+    socket.on('status', function(msg) {
+        var setting = fs.readFileSync(__dirname + "/setting/register.json");
+        var memebers = JSON.parse(setting)["memebers"];
+
+        for (var cnt = 0;cnt < memebers.length;cnt++) {
+            if (msg == memebers[cnt]["status"]) {
+                var sendmsg = {"other": memebers[cnt]["other"], "other_name": memebers[cnt]["other_name"]};
+                socket.emit("re_status", sendmsg);
+                break;
+            }
+        }
+        
+    });
     //socket.on('message', function(msg){
     //});	
 
