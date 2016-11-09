@@ -1,16 +1,40 @@
 $(function(){
-    $("#againPassword").keyup(function(){
-        var value = $( this ).val();
-        var password = $( "#password" ).val();
-        console.log(value);
-        console.log(password);
-        console.log(value != password);
-        if (value != password) {
-            $( "#checkPassword" ).css("display", "block");
+    setCheck("#account", function(){
+        return $("#account").val().length < 1;
+    }, "#checkAccount", "請輸入帳號");
+    
+    setCheck("#password", function(){
+        return $("#password").val().length < 4;
+    }, "#checkPassword", "密碼至少四碼");
+    
+    setCheck("#againPassword", function(){
+        return $("#againPassword").val() != $("#password").val();
+    }, "#checkAgainPassword", "與密碼不合");
+    
+    setCheck("#name", function(){
+        return $("#name").val().length < 1;
+    }, "#checkName", "請輸入名字");
+    
+    setCheck("#ssid", function(){
+        var re = new RegExp("^[A-Z]\\d{9}");
+        return !re.test($("#ssid").val());
+    }, "#checkSsid", "身分證字號格式不對");
+    
+    setCheck("#email", function(){
+        var re = new RegExp("^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z]+$");
+        return !re.test($("#email").val());
+    }, "#checkEmail", "Email格式不合");
+
+});
+
+function setCheck(id, check, warningid, warning) {
+    $(id).keyup(function(){
+        var bool = check();
+        if (bool) {
+            $(warningid).text(warning);
         } else {
-            $( "#checkPassword" ).css("display", "none");
+            $(warningid).text("");
         }
-        
     })
     .keyup();
-});
+}
