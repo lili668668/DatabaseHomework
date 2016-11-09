@@ -3,6 +3,8 @@ var express = require('express');
 var socketio = require('socket.io');
 var bodyparser = require('body-parser');
 var cc = require('config-multipaas');
+var fs = require('fs');
+var render = require('./tool/setHtml.js');
 
 var app = express();
 var server = http.createServer(app);
@@ -23,7 +25,18 @@ app.get('/', function(request,response){
 });
 
 app.get('/register', function(request, response){
-    response.sendFile(__dirname + "/html/register.html");
+    var setting = fs.readFileSync(__dirname + "/setting/register.json");
+    var memebers = JSON.parse(setting)["memebers"];
+    var values = [];
+    for (var cnt = 0;cnt < memebers.length;cnt++) {
+        values.push(memebers[cnt]["status"]);
+    }
+    var options = [];
+    for (var cnt = 0;cnt < memebers.length;cnt++) {
+        options.push(memebers[cnt]["name"]);
+    }
+    var sendHtml = render.setDroplist(__dirname + "/html/register.html", "#status", values, options);
+    response.send(sendHtml);
 });
 
 io.on('connection', function(socket){

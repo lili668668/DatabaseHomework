@@ -25,6 +25,17 @@ $(function(){
         return !re.test($("#email").val());
     }, "#checkEmail", "Email格式不合");
 
+
+    $("#status").change(function() {
+        if ( $( "#status" ).val() == "none" ) {
+            $("#checkStatus").text("請選擇一個身分");
+        } else {
+            $("#checkStatus").text("");
+        }
+        checkSubmit();
+    })
+    .change();
+
 });
 
 function setCheck(id, check, warningid, warning) {
@@ -35,6 +46,26 @@ function setCheck(id, check, warningid, warning) {
         } else {
             $(warningid).text("");
         }
+
+        checkSubmit();
     })
     .keyup();
+
 }
+
+function checkSubmit() {
+    let flag = true;
+    $(".check").each(function(){
+        if ( $( this ).text() != "" ) {
+            flag = false;
+            return;
+        }
+        return;
+    });
+    if (flag) {
+        $("#submit").prop("disabled", false);
+    } else {
+        $("#submit").prop("disabled", true);
+    }
+}
+

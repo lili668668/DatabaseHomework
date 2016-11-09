@@ -1,0 +1,8 @@
+{
+    "memebers": [
+        {"status": "professor", "name": "教授"},
+        {"status": "TA", "name": "助教"},
+        {"status": "student", "name": "學生"},
+        {"status": "order_man", "name": "銷售員"}
+    ]
+}
