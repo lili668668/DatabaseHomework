@@ -5,6 +5,7 @@ var bodyparser = require('body-parser');
 var cc = require('config-multipaas');
 var fs = require('fs');
 var render = require('./tool/setHtml.js');
+var db_insert = require('./db/insert.js');
 
 var app = express();
 var server = http.createServer(app);
@@ -39,6 +40,23 @@ app.get('/register', function(request, response){
     response.send(sendHtml);
 });
 
+app.post('/register_process', function(request, response){
+    var row = request.body;
+    var type = row.status;
+    if (type == "professor") {
+        db_insert.register_professor(row.account, row.password, row.name, row.ssid, row.email, "pr", row.proid, row.office, row.grade);
+    } else if (type == "TA") {
+        db_insert.register_ta(row.account, row.password, row.name, row.ssid, row.email, "ta", row.taid, row.room);
+    } else if (type == "student") {
+        db_insert.register_student(row.account, row.password, row.name, row.ssid, row.email, "st", row.sid, row.class);
+    } else if (type == "order_man") {
+        db_insert.register_orderMan(row.account, row.password, row.name, row.ssid, row.email, "om", row.omid);
+    }
+
+    response.redirect("/");
+
+});
+
 io.on('connection', function(socket){
     socket.on('status', function(msg) {
         var setting = fs.readFileSync(__dirname + "/setting/register.json");
@@ -53,10 +71,6 @@ io.on('connection', function(socket){
         }
         
     });
-    //socket.on('message', function(msg){
-    //});	
-
-    //socket.emit('name', name);
     //io.emit('info', name + "上線，目前線上" + people_counter + "人");
 
 });
