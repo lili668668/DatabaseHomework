@@ -1,67 +1,37 @@
 var config = require('./dbConfig.js');
+var con = require('./dbConst.js');
 var mssql = require('mssql');
 
-const sMember = 'MEMBER';
-const sProfessor = 'PROFESSOR';
-const sTa = 'TA';
-const sStudent = 'STUDENT';
-const sOrderMan = 'ORDER_MAN';
+function register_member(account, password, name, ssid, email, type, callback) {
 
-// memeber
-const sAccount = 'account';
-const sPassword = 'password';
-const sName = 'name';
-const sSsid = 'ssid';
-const sEmail = 'email';
-const sType = 'status';
-const sQcount = 'qcount';
-const initQcount = 0;
+    var sql = `INSERT INTO ${con.sMember} (${con.sAccount}, ${con.sPassword}, ${con.sName}, ${con.sSsid}, ${con.sEmail}, ${con.sType}, ${con.sQcount}) VALUES ('${account}', '${password}', '${name}', '${ssid}', '${email}', '${type}', ${con.initQcount});`;
 
-// PROFESSOR
-const sProid = 'proid';
-const sOffice = 'office';
-const sGrade = 'grade';
+    set(sql, callback);
 
-// TA
-const sTaid = 'taid';
-const sRoom = 'room';
-
-// STUDENT
-const sSID = 'sid';
-const sClass = 'class';
-
-// ORDER_MAN
-const sOrderManid = 'omid';
-
-function register_member(account, password, name, ssid, email, type, otherSet) {
-
-    var sql = `INSERT INTO ${sMember} (${sAccount}, ${sPassword}, ${sName}, ${sSsid}, ${sEmail}, ${sType}, ${sQcount}) VALUES ('${account}', '${password}', '${name}', '${ssid}', '${email}', '${type}', ${initQcount});`;
-
-    set(sql);
 }
 
 function register_professor(account, password, name, ssid, email, type, proid, office, grade, otherSet) {
-    var sql = `insert into ${sProfessor}(${sAccount}, ${sProid}, ${sOffice}, ${sGrade}) values('${account}', '${proid}', '${office}', '${grade}')`;
+    var sql = `insert into ${con.sProfessor}(${con.sAccount}, ${con.sProid}, ${con.sOffice}, ${con.sGrade}) values('${account}', '${proid}', '${office}', '${grade}');`;
 
-    register_member(account, password, name, ssid, email, type, set(sql, otherSet));
+    register_member(account, password, name, ssid, email, type, function(){set(sql);});
 }
 
 function register_ta(account, password, name, ssid, email, type, taid, room, otherSet) {
-    var sql = `insert into ${sTa}(${sAccount}, ${sTaid}, ${sRoom}) values('${account}', '${taid}', '${room}')`;
+    var sql = `insert into ${con.sTa}(${con.sAccount}, ${con.sTaid}, ${con.sRoom}) values('${account}', '${taid}', '${room}');`;
 
-    register_member(account, password, name, ssid, email, type, set(sql, otherSet));
+    register_member(account, password, name, ssid, email, type, function(){set(sql);});
 
 }
 
-function register_student(account, password, name, ssid, email, type, sid, class_, otherSet) {
-    var sql = `insert into ${sStudent}(${sAccount}, ${sSID}, ${sClass}) values('${account}', '${sid}', '${class_}')`;
+function register_student(account, password, name, ssid, email, type, sid, class_) {
+    var sql = `insert into ${con.sStudent}(${con.sAccount}, ${con.sSID}, ${con.sClass}) values('${account}', '${sid}', '${class_}');`;
 
-    register_member(account, password, name, ssid, email, type, set(sql, otherSet));
+    register_member(account, password, name, ssid, email, type, function(){set(sql);});
 }
 
-function register_orderMan(account, password, name, ssid, email, type, ordermanid, otherSet) {
-    var sql = `insert into ${sOrderMan}(${sAccount}, ${sOrderManid}) values('${account}', '${ordermanid}')`;
-    register_member(account, password, name, ssid, email, type, set(sql, otherSet));
+function register_orderMan(account, password, name, ssid, email, type, ordermanid) {
+    var sql = `insert into ${con.sOrderMan}(${con.sAccount}, ${con.sOrderManid}) values('${account}', '${ordermanid}');`;
+    register_member(account, password, name, ssid, email, type, function(){set(sql);});
 }
 
 function set(sqlstr, callback) {
@@ -90,8 +60,12 @@ function set(sqlstr, callback) {
                             console.log(err);
                             return;
                         });
+                    } else {
+                        console.log('commited');
+                        if (callback) {
+                            callback();
+                        }
                     }
-                    console.log('commited');
                 });
             });
 

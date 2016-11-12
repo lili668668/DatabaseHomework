@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+    <head>
+        <title>登入</title>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+        <link rel="stylesheet" href="css/register.css" type="text/css" media="all" />
+    </head>
+    <body>
+        <h1>登入</h1>
+        <form method="POST" action="/login_process" id="form">
+            <p>帳號</p>
+            <input id="account" name="account" type="text">
+            <p>密碼</p>
+            <input name="password" id="password" type="password">
+            <p id="error"></p>
+            <button id="submit" type="submit">登入</button>
+        </form>
+        <form method="GET" action="/register" id="sign">
+            <button id="sign" type="submit">註冊</button>
+        </form>
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<script src="js/register.js"></script>
+    </body>
+</html>

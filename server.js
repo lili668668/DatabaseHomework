@@ -7,6 +7,7 @@ var cc = require('config-multipaas');
 var fs = require('fs');
 var render = require('./tool/setHtml.js');
 var db_insert = require('./db/insert.js');
+var db_select = require('./db/select.js');
 
 var app = express();
 var server = http.createServer(app);
@@ -47,6 +48,33 @@ app.get('/register', function(request, response){
     }
     var sendHtml = render.setDroplist(__dirname + "/html/register.html", "#status", values, options);
     response.send(sendHtml);
+});
+
+app.get('/login', function(request, response){
+    if (request.session.login) {
+        response.redirect("/");
+    } else if (request.session.logfail){
+        var sendHtml = render.setText(__dirname + "/html/login.html", "#error", "帳密錯誤");
+        response.send(sendHtml);
+    } else {
+        response.sendFile(__dirname + "/html/login.html");
+    }
+});
+
+app.post('/login_process', function(request, response){
+    var row = request.body;
+    if (db_select.verification_account(row.account, row.password)) {
+        request.session.login = row.account;
+        response.redirect("/");
+    } else {
+        request.session.logfail = "fail";
+        response.redirect("/login");
+    }
+});
+
+app.get('/logout', function(request, response){
+    request.session.login = "";
+    response.redirect("/");
 });
 
 app.post('/register_process', function(request, response){

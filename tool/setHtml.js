@@ -16,4 +16,13 @@ function setDroplist(htmlFile, droplistId, valueArr, optionArr) {
 
 }
 
+function setText(htmlFile, markid, text) {
+    var html = fs.readFileSync(htmlFile);
+    var $ = cheerio.load(html);
+    $(markid).text(text);
+    var res = $.html();
+    return res;
+}
+
 module.exports.setDroplist = setDroplist;
+module.exports.setText = setText;
