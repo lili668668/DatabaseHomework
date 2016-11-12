@@ -78,14 +78,26 @@ socket.on("re_status", function(msg){
     var other_name = msg["other_name"];
     for (var cnt = 0;cnt < other.length;cnt++) {
         var str1 = `<p>${other_name[cnt]}</p>`;
-        var str2 = `<input type="text" id="${other[cnt]}" name="${other[cnt]}">`;
+        var str2 = `<input type="text" class="other" id="${other[cnt]}" name="${other[cnt]}">`;
         var str3 = `<p class="check" id="check_${other[cnt]}"></p>`
         $("#other").append(str1);
         $("#other").append(str2);
         $("#other").append(str3);
-
-        setCheck(`"#${other[cnt]}"`, function(){
-            return $(`"#${other[cnt]}"`).val().length < 1;
-        }, `"#check_${other}[cnt]"`, "請勿留空");
     }
+
+    $(".other").each(function(){
+        $( this ).keyup(function(){
+            var bool = $( this ).val().length < 1;
+            var warningid = "#check_" + $( this ).attr("id");
+            if ( bool ) {
+                $(warningid).text("請勿留白");
+            } else {
+                $(warningid).text("");
+            }
+
+            checkSubmit();
+        })
+        .keyup();
+    });
+
 });
