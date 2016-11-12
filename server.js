@@ -101,7 +101,7 @@ app.post('/add_book_process', function(request, response){
         return;
     }
     
-    db_insert.add_book(row.bookid, row.bookname, row.price, row.author, row.publisher);
+    db_insert.add_book(row.id, row.name, row.price, row.author, row.publisher);
     response.redirect('/manage_book');
 });
 
@@ -168,7 +168,7 @@ io.on('connection', function(socket){
 
 });
 
-server.listen(config.get('PORT'), config.get('IP'), function () {
-    console.log( "Listening on " + config.get('IP') + ", port " + config.get('PORT')  )
+server.listen("8000", config.get('IP'), function () {
+    console.log( "Listening on " + config.get('IP') + ", port " + "8000");
 });
 
