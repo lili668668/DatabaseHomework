@@ -32,6 +32,29 @@ function getType(account, callback) {
     });
 }
 
+function getAuthorId(callback) {
+
+    var sql = `select ${con.sAuthorId} from [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}]`;
+
+    set(sql, function(rows){
+        if (rows.length == 0) {
+            if (callback) {
+                callback(1);
+            }
+        } else {
+            var row = rows.pop();
+            var tmp = row["authorid"];
+            tmp = tmp.substr(1, tmp.length - 1);
+            var authorid = parseInt(tmp, 10) + 1;
+            if (callback) {
+                callback(authorid);
+            }
+
+        }
+
+    });
+}
+
 function set(sqlstr, callback) {
     var connection = new mssql.Connection(config);
     var rows = [];
@@ -63,3 +86,4 @@ function set(sqlstr, callback) {
 module.exports.verification_account = verification_account;
 module.exports.getType = getType;
 module.exports.account_info = account_info;
+module.exports.getAuthorId = getAuthorId;

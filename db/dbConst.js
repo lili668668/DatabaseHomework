@@ -11,6 +11,9 @@ const sProfessor = 'PROFESSOR';
 const sTa = 'TA';
 const sStudent = 'STUDENT';
 const sOrderMan = 'ORDER_MAN';
+const sBook = 'BOOK';
+const sAuthor = 'AUTHOR';
+const sAuthorBook = 'AUTHOR_BOOK_LIST';
 
 // memeber
 const sAccount = 'account';
@@ -38,6 +41,16 @@ const sClass = 'class';
 // ORDER_MAN
 const sOrderManid = 'omid';
 
+// BOOK
+const sBookId = 'bookid';
+const sBookName = 'bookname';
+const sPrice = 'price';
+const sPublisher = 'publisher';
+
+// AUTHOR
+const sAuthorId = 'authorid';
+const sAuthorName = 'name';
+
 module.exports = {
     // root
     sRoot: sRoot,
@@ -52,6 +65,9 @@ module.exports = {
     sTa: sTa,
     sStudent: sStudent,
     sOrderMan: sOrderMan,
+    sBook: sBook,
+    sAuthor: sAuthor,
+    sAuthorBook: sAuthorBook,
 
     // memeber
     sAccount: sAccount,
@@ -77,6 +93,16 @@ module.exports = {
     sClass: sClass,
 
     // ORDER_MAN
-    sOrderManid: sOrderManid
+    sOrderManid: sOrderManid,
+
+    // BOOK
+    sBookId: sBookId,
+    sBookName: sBookName,
+    sPrice: sPrice,
+    sPublisher: sPublisher,
+
+    // AUTHOR
+    sAuthorId: sAuthorId,
+    sAuthorName: sAuthorName
 
 }

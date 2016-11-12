@@ -31,6 +31,7 @@ app.get('/', function(request,response){
     if (request.session.login) {
         if (request.session.type == 'om') {
             var sendHtml = render.setButton(__dirname + "/html/login_index.html", "#insert", "GET", "/manage_book", "管理書籍");
+            sendHtml = render.setHTMLButton(sendHtml, "#insert", "GET", "/manage_store", "管理書店");
             response.send(sendHtml);
         } else {
             response.sendFile(__dirname + "/html/login_index.html");
@@ -75,6 +76,33 @@ app.get('/member_center', function(request, response){
     } else {
         response.redirect('/');
     }
+});
+
+app.get('/manage_book', function(request, response){
+    if (request.session.login && request.session.type == 'om') {
+        response.sendFile(__dirname + '/html/manage_book.html');
+    } else {
+        response.redirect('/');
+    }
+});
+
+app.get('/add_book', function(request, response){
+    if (request.session.login && request.session.type == 'om') {
+        response.sendFile(__dirname + '/html/add_book.html');
+    } else {
+        response.redirect('/');
+    }
+});
+
+app.post('/add_book_process', function(request, response){
+    var row = request.body;
+    if (!row) {
+        response.redirect('/manage_book');
+        return;
+    }
+    
+    db_insert.add_book(row.bookid, row.bookname, row.price, row.author, row.publisher);
+    response.redirect('/manage_book');
 });
 
 app.post('/login_process', function(request, response){

@@ -47,7 +47,20 @@ function setButton(htmlFile, markid, formmethed, formaction, buttonname) {
     return res;
 }
 
+function setHTMLButton(html, markid, formmethed, formaction, buttonname) {
+    var $ = cheerio.load(html);
+    
+    var str = `<form method="${formmethed}" action="${formaction}">
+        <button type="submit">${buttonname}</button>
+        </form>`;
+
+    $(markid).append(str);
+    var res = $.html();
+    return res;
+}
+
 module.exports.setDroplist = setDroplist;
 module.exports.setText = setText;
 module.exports.setTexts = setTexts;
 module.exports.setButton = setButton;
+module.exports.setHTMLButton = setHTMLButton;

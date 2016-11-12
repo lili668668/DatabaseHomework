@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+    <head>
+        <title>管理書籍</title>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+        <link rel="stylesheet" href="css/index.css" type="text/css" media="all" />
+    </head>
+    <body>
+        <form method="GET" action="/add_book">
+            <button type="submit">新增書籍</button>
+        </form>
+        <form method="GET" action="/change_book">
+            <button type="submit">修改書籍</button>
+        </form>
+        <form method="GET" action="/delete_book">
+            <button type="submit">刪除書籍</button>
+        </form>
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    </body>
+</html>
