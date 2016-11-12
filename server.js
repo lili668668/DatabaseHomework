@@ -29,7 +29,12 @@ app.use( cookie_session({
 
 app.get('/', function(request,response){
     if (request.session.login) {
-        response.sendFile(__dirname + "/html/login_index.html");
+        if (request.session.type == 'om') {
+            var sendHtml = render.setButton(__dirname + "/html/login_index.html", "#insert", "GET", "/manage_book", "管理書籍");
+            response.send(sendHtml);
+        } else {
+            response.sendFile(__dirname + "/html/login_index.html");
+        }
     } else {
         response.sendFile(__dirname + "/index.html");
     }
@@ -61,19 +66,36 @@ app.get('/login', function(request, response){
     }
 });
 
+app.get('/member_center', function(request, response){
+    if (request.session.login) {
+        db_select.account_info(request.session.login, function(rows) {
+            var sendHtml = render.setTexts(__dirname + "/html/member_center.html", ["#account", "#password", "#name", "#ssid", "#email", "#type", "#qcount"], [rows["Account"], rows["Password"], rows["Name"], rows["Ssid"], rows["Email"], rows["Status"], rows["QCount"]]);
+            response.send(sendHtml);
+        });
+    } else {
+        response.redirect('/');
+    }
+});
+
 app.post('/login_process', function(request, response){
     var row = request.body;
-    if (db_select.verification_account(row.account, row.password)) {
-        request.session.login = row.account;
-        response.redirect("/");
-    } else {
-        request.session.logfail = "fail";
-        response.redirect("/login");
-    }
+    db_select.verification_account(row.account, row.password, function(bool){
+        if (bool) {
+            request.session.login = row.account;
+            db_select.getType(row.account, function(type){
+                request.session.type = type;
+            });
+            response.redirect("/");
+        } else {
+            request.session.logfail = "fail";
+            response.redirect("/login");
+        }
+    });
 });
 
 app.get('/logout', function(request, response){
     request.session.login = "";
+    request.session.type = "";
     response.redirect("/");
 });
 
@@ -82,12 +104,16 @@ app.post('/register_process', function(request, response){
     var type = row.status;
     if (type == "professor") {
         db_insert.register_professor(row.account, row.password, row.name, row.ssid, row.email, "pr", row.proid, row.office, row.grade);
+        request.session.type = "pr";
     } else if (type == "TA") {
         db_insert.register_ta(row.account, row.password, row.name, row.ssid, row.email, "ta", row.taid, row.room);
+        request.session.type = "ta";
     } else if (type == "student") {
         db_insert.register_student(row.account, row.password, row.name, row.ssid, row.email, "st", row.sid, row.class);
+        request.session.type = "st";
     } else if (type == "order_man") {
         db_insert.register_orderMan(row.account, row.password, row.name, row.ssid, row.email, "om", row.omid);
+        request.session.type = "om";
     }
 
     request.session.login = row.account;

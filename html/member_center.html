@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+    <head>
+        <title>會員專區</title>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+        <link rel="stylesheet" href="css/register.css" type="text/css" media="all" />
+    </head>
+    <body>
+        <h1>會員專區</h1>
+        <p>帳號: <p id="account"></p></p>
+        <p>密碼: <p id="password"></p></p>
+        <p>姓名: <p id="name"></p></p>
+        <p>身分證字號: <p id="ssid"></p></p>
+        <p>Email: <p id="email"></p></p>
+        <p>身分: <p id="type"></p></p>
+        <p>總訂購次數: <p id="qcount"></p></p>
+        <div id="other"></div>
+        <form method="GET" action="/fix_member">
+            <button id="fix" type="submit">修改資料</button>
+        </form>
+        <form method="GET" action="/">
+            <button id="back" type="submit">回首頁</button>
+        </form>
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    </body>
+</html>

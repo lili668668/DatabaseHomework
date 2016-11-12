@@ -6,14 +6,17 @@
         <link rel="stylesheet" href="css/index.css" type="text/css" media="all" />
     </head>
     <body>
-        <form method="GET" action="/member_set">
+        <form method="GET" action="/member_center">
             <button type="submit">會員專區</button>
         </form>
+        <form method="GET" action="/order_book">
+            <button type="submit">訂書</button>
+        </form>
+        <div id="insert"></div>
         <form method="GET" action="/logout">
             <button type="submit">登出</button>
         </form>
         <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
         <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-		<script src="js/index.js"></script>
     </body>
 </html>

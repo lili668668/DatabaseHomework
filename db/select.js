@@ -2,14 +2,32 @@ var config = require('./dbConfig.js');
 var mssql = require('mssql');
 var con = require('./dbConst.js')
 
-function verification_account(account, password) {
+function verification_account(account, password, callback) {
 
     var sql = `select ${con.sPassword} from [${con.sRoot}].[${con.sDbo}].[${con.sMember}] where ${con.sAccount} = '${account}';`;
 
-    var bool = false;
-    return set(sql, function(rows){
-        if (password === rows[0]["password"]) {
-            return true;
+    set(sql, function(rows){
+        if (callback) {
+            callback(password === rows[0]["password"]);
+        }
+    });
+}
+
+function account_info(account, callback) {
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sMember}] where ${con.sAccount} = '${account}';`
+    set(sql, function(rows){
+        if (callback) {
+            callback(rows[0]);
+        }
+    });
+}
+
+function getType(account, callback) {
+    var sql = `select ${con.sType} from [${con.sRoot}].[${con.sDbo}].[${con.sMember}] where ${con.sAccount} = '${account}';`
+
+    set(sql, function(rows){
+        if (callback) {
+            callback(rows[0]["status"]);
         }
     });
 }
@@ -17,7 +35,7 @@ function verification_account(account, password) {
 function set(sqlstr, callback) {
     var connection = new mssql.Connection(config);
     var rows = [];
-    return connection.connect(function(err) {
+    connection.connect(function(err) {
         if (err) {
             console.log(err);
             return;
@@ -33,9 +51,9 @@ function set(sqlstr, callback) {
             console.log(sqlstr);
             return;
         });
-        return mydb.on('done', function(affected){
+        mydb.on('done', function(affected){
             if (callback) {
-                return callback(rows);
+                callback(rows);
             }
         });
     });
@@ -43,3 +61,5 @@ function set(sqlstr, callback) {
 }
 
 module.exports.verification_account = verification_account;
+module.exports.getType = getType;
+module.exports.account_info = account_info;
