@@ -1,6 +1,7 @@
 var http = require('http');
 var express = require('express');
 var socketio = require('socket.io');
+var cookie_session = require('cookie-session');
 var bodyparser = require('body-parser');
 var cc = require('config-multipaas');
 var fs = require('fs');
@@ -20,9 +21,17 @@ app.use( bodyparser.json() );
 app.use( bodyparser.urlencoded({
     extended: true
 }) );
+app.use( cookie_session({
+    name: 'session',
+    secret: process.env.npm_package_config_secret
+}) );
 
 app.get('/', function(request,response){
-    response.sendFile(__dirname + "/index.html");
+    if (request.session.login) {
+        response.sendFile(__dirname + "/html/login_index.html");
+    } else {
+        response.sendFile(__dirname + "/index.html");
+    }
 });
 
 app.get('/register', function(request, response){
@@ -52,6 +61,8 @@ app.post('/register_process', function(request, response){
     } else if (type == "order_man") {
         db_insert.register_orderMan(row.account, row.password, row.name, row.ssid, row.email, "om", row.omid);
     }
+
+    request.session.login = row.account;
 
     response.redirect("/");
 
