@@ -8,6 +8,7 @@ var fs = require('fs');
 var render = require('./tool/setHtml.js');
 var db_insert = require('./db/insert.js');
 var db_select = require('./db/select.js');
+var db_update = require('./db/update.js');
 
 var app = express();
 var server = http.createServer(app);
@@ -70,9 +71,49 @@ app.get('/login', function(request, response){
 app.get('/member_center', function(request, response){
     if (request.session.login) {
         db_select.account_info(request.session.login, function(rows) {
-            var sendHtml = render.setTexts(__dirname + "/html/member_center.html", ["#account", "#password", "#name", "#ssid", "#email", "#type", "#qcount"], [rows["Account"], rows["Password"], rows["Name"], rows["Ssid"], rows["Email"], rows["Status"], rows["QCount"]]);
-            response.send(sendHtml);
+            var stu = rows["Status"];
+
+            var titles = ["帳號", "名字", "身分證字號", "Email", "訂購次數"];
+            var texts = [rows["Account"], rows["Name"], rows["SSID"], rows["Email"], rows["QCount"]];
+
+            if (stu == "pr") {
+                db_select.professor_info(request.session.login, function(res){
+                    titles.push("身分", "教師代碼", "辦公室", "職等");
+                    texts.push("教授", res["Proid"], res["Office"], res["Grade"]);
+                    var sendHtml = render.setTexts(__dirname + "/html/member_center.html", "#fill", titles, texts);
+                    response.send(sendHtml);
+                });
+            } else if (stu == "st") {
+                db_select.student_info(request.session.login, function(res){
+                    titles.push("身分", "學生代碼", "班級");
+                    texts.push("學生", res["Sid"], res["Class"]);
+                    var sendHtml = render.setTexts(__dirname + "/html/member_center.html", "#fill", titles, texts);
+                    response.send(sendHtml);
+                });
+            } else if (stu == "ta") {
+                db_select.ta_info(request.session.login, function(res){
+                    titles.push("身分", "助教代碼", "實驗室");
+                    texts.push("助教", res["Taid"], res["Room"]);
+                    var sendHtml = render.setTexts(__dirname + "/html/member_center.html", "#fill", titles, texts);
+                    response.send(sendHtml);
+                });
+            } else if (stu == "om") {
+                db_select.orderMan_info(request.session.login, function(res){
+                    titles.push("身分", "銷售員代碼");
+                    texts.push("銷售員", res["OMID"]);
+                    var sendHtml = render.setTexts(__dirname + "/html/member_center.html", "#fill", titles, texts);
+                    response.send(sendHtml);
+                });
+            }
         });
+    } else {
+        response.redirect('/');
+    }
+});
+
+app.get('/update_member', function(request, response){
+    if (request.session.login) {
+        
     } else {
         response.redirect('/');
     }
