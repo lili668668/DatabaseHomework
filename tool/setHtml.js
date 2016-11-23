@@ -24,12 +24,14 @@ function setText(htmlFile, markid, text) {
     return res;
 }
 
-function setTexts(htmlFile, markid, text) {
+function setTexts(htmlFile, markid, titles, texts) {
     var html = fs.readFileSync(htmlFile);
     var $ = cheerio.load(html);
-    for (var cnt = 0;cnt < markid.length;cnt++) {
-        $(markid[cnt]).text(text[cnt]);
+    var str = "";
+    for (var cnt = 0;cnt < titles.length;cnt++) {
+        str += `<p>${titles[cnt]}: <span>${texts[cnt]}</span></p>`;
     }
+    $(markid).append(str);
     var res = $.html();
     return res;
 }
