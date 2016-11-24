@@ -46,29 +46,32 @@ function add_book(bookid, bookname, price, author, publisher) {
 }
 
 function add_author(author, bookid) {
-    var authorlist = split(author);
+    var authorlist = split(author, ",");
 
-    for (var authorName in authorlist) {
-        db_select.verification_author(authorName, function(inAuthor){
+    authorlist.forEach(function(authorName, index, array){
+        db_select.verification_author(authorName, function(inAuthor, authorid){
             if (inAuthor) {
-                db_select.getAuthorId(function(authorid) {
-                    var sql = `insert into ${con.sAuthor}(${con.sAuthorId}, ${con.sAuthorName}) values('A${authorid}', '${author}');`;
-                    set(sql, function(){
-                        add_author_book(authorid, bookid);
-                    });
-                });
+                add_author_book(authorid.trim(), bookid);
             
             } else {
-                add_author_book(authorid, bookid);
+                db_select.getAuthorId(function(authorNo) {
+                    authorNo = authorNo + index;
+
+                    var sql = `insert into ${con.sAuthor}(${con.sAuthorId}, ${con.sAuthorName}) values('A${authorNo}', '${authorName}');`;
+                    set(sql, function(){
+                        add_author_book('A' + authorNo, bookid);
+                    });
+                });
             }
         });
-    }
+
+    });
 
 }
 
 function add_author_book(authorid, bookid) {
 
-    var sql = `insert into ${con.sAuthorBook}(${con.sAuthorId}, ${con.sBookId}) values('A${authorid}', '${bookid}');`;
+    var sql = `insert into ${con.sAuthorBook}(${con.sAuthorId}, ${con.sBookId}) values('${authorid}', '${bookid}');`;
 
     set(sql);
 
@@ -117,8 +120,8 @@ function set(sqlstr, callback) {
 function split(origin, spliter) {
     var list = origin.split(spliter);
     var newlist = [];
-    for (var l in list) {
-        newlist.push(l.trim());
+    for (var cnt = 0;cnt < list.length;cnt++) {
+        newlist.push(list[cnt].trim());
     }
 
     return newlist;

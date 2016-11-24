@@ -189,6 +189,7 @@ app.post('/add_book_process', function(request, response){
         return;
     }
     
+    console.log(row.author);
     db_insert.add_book(row.id, row.name, row.price, row.author, row.publisher);
     response.redirect('/manage_book');
 });

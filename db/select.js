@@ -8,18 +8,29 @@ function verification_account(account, password, callback) {
 
     set(sql, function(rows){
         if (callback) {
-            callback(password === rows[0]["password"]);
+            callback(password === rows[0]["Password"]);
         }
     });
 }
 
 function verification_author(authorName, callback) {
 
-    var sql = `select ${con.sAuthorName} from [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] where ${con.sAuthorName} = '${authorName}';`;
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}];`;
 
     set(sql, function(rows){
+        var flag = false;
+        var cnt = 0;
+        for (;cnt < rows.legnth;cnt++) {
+            var rowName = rows[cnt]["Name"];
+            rowName = rowName.trim();
+            if (rowName == authorName) {
+                flag = true;
+                break;
+            }
+        }
+
         if (callback) {
-            callback(rows[0] !== undefined);
+            callback(flag, rows[cnt]["AuthorID"]);
         }
     });
 }
@@ -89,23 +100,14 @@ function getType(account, callback) {
 
 function getAuthorId(callback) {
 
-    var sql = `select ${con.sAuthorId} from [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}]`;
+    var sql = `select count(${con.sAuthorId}) as cou from [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}]`;
 
     set(sql, function(rows){
-        if (rows.length == 0) {
-            if (callback) {
-                callback(1);
-            }
-        } else {
-            var row = rows.pop();
-            var tmp = row["authorid"];
-            tmp = tmp.substr(1, tmp.length - 1);
-            var authorid = parseInt(tmp, 10) + 1;
-            if (callback) {
-                callback(authorid);
-            }
-
+        if (callback) {
+            var count = parseInt(rows[0]["cou"], 10) + 1;
+            callback(count);
         }
+
 
     });
 }
