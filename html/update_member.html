@@ -1,15 +1,16 @@
 <!doctype html>
 <html>
     <head>
-        <title>註冊</title>
+        <title>修改個人資料</title>
         <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
         <link rel="stylesheet" href="css/register.css" type="text/css" media="all" />
     </head>
     <body>
-        <h1>註冊</h1>
-        <form method="POST" action="/register_process" id="form">
+        <h1>修改個人資料</h1>
+        <form method="POST" action="/update_member_process" id="form">
             <p>帳號</p>
-            <p>
+            <input name="account" id="account" type="text">
+            <p class="check" id="checkAccount"></p>
             <a href="/update_password">修改密碼</a>
             <p>姓名</p>
             <input name="name" id="name" type="text">
@@ -20,19 +21,14 @@
             <p>Email</p>
             <input name="email" id="email" type="email">
             <p class="check" id="checkEmail"></p>
-            <p>身分</p>
-            <select name="status" id="status">
-                <option value="none" selected>請選擇身分</option>
-            </select>
-            <p class="check" id="checkStatus"></p>
             <div id="other"></div>
             <button id="submit" type="submit" disabled>提交</button>
         </form>
-        <form method="GET" action="/">
+        <form method="GET" action="/member_center">
             <button id="cancel" type="submit">取消</button>
         </form>
         <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
         <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-		<script src="js/register.js"></script>
+		<script src="js/update_member.js"></script>
     </body>
 </html>
