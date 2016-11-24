@@ -18,6 +18,21 @@ $(function(){
         return !re.test($("#email").val());
     }, "#checkEmail", "Email格式不合");
 
+    $(".other").each(function(){
+        $( this ).keyup(function(){
+            var bool = $( this ).val().length < 1;
+            var warningid = "#check_" + $( this ).attr("id");
+            if ( bool ) {
+                $(warningid).text("請勿留白");
+            } else {
+                $(warningid).text("");
+            }
+
+            checkSubmit();
+        })
+        .keyup();
+    });
+
 });
 
 function setCheck(id, check, warningid, warning) {
@@ -51,32 +66,3 @@ function checkSubmit() {
     }
 }
 
-socket.on("re_status", function(msg){
-    $("#other").empty();
-    var other = msg["other"];
-    var other_name = msg["other_name"];
-    for (var cnt = 0;cnt < other.length;cnt++) {
-        var str1 = `<p>${other_name[cnt]}</p>`;
-        var str2 = `<input type="text" class="other" id="${other[cnt]}" name="${other[cnt]}">`;
-        var str3 = `<p class="check" id="check_${other[cnt]}"></p>`
-        $("#other").append(str1);
-        $("#other").append(str2);
-        $("#other").append(str3);
-    }
-
-    $(".other").each(function(){
-        $( this ).keyup(function(){
-            var bool = $( this ).val().length < 1;
-            var warningid = "#check_" + $( this ).attr("id");
-            if ( bool ) {
-                $(warningid).text("請勿留白");
-            } else {
-                $(warningid).text("");
-            }
-
-            checkSubmit();
-        })
-        .keyup();
-    });
-
-});

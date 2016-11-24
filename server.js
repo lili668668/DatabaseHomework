@@ -88,14 +88,14 @@ app.get('/member_center', function(request, response){
             } else if (stu == "st") {
                 db_select.student_info(request.session.login, function(res){
                     titles.push("身分", "學生代碼", "班級");
-                    texts.push("學生", res["Sid"], res["Class"]);
+                    texts.push("學生", res["SID"], res["Class"]);
                     var sendHtml = render.setTexts(__dirname + "/html/member_center.html", "#fill", titles, texts);
                     response.send(sendHtml);
                 });
             } else if (stu == "ta") {
                 db_select.ta_info(request.session.login, function(res){
                     titles.push("身分", "助教代碼", "實驗室");
-                    texts.push("助教", res["Taid"], res["Room"]);
+                    texts.push("助教", res["TAID"], res["Room"]);
                     var sendHtml = render.setTexts(__dirname + "/html/member_center.html", "#fill", titles, texts);
                     response.send(sendHtml);
                 });
@@ -115,8 +115,52 @@ app.get('/member_center', function(request, response){
 
 app.get('/update_member', function(request, response){
     if (request.session.login) {
-        response.sendFile(__dirname + "/html/update_member.html");
-        setStatusItem(mapStus[request.session.type]);
+        db_select.account_info(request.session.login, function(rows) {
+            var stu = rows["Status"];
+            var setting = fs.readFileSync(__dirname + "/setting/register.json");
+            var memebers = JSON.parse(setting)["memebers"];
+
+            var fillid = ["#account", "#name", "#ssid", "#email"];
+            var content = [rows["Account"], rows["Name"], rows["SSID"], rows["Email"]];
+            var resHTML = "";
+            for (var cnt = 0;cnt < memebers.length;cnt++) {
+                if (mapStus[stu] == memebers[cnt]["status"]) {
+                    resHTML = render.setStatusItem(__dirname + "/html/update_member.html", "#other", memebers[cnt]["other"], memebers[cnt]["other_name"]);
+                    break;
+                }
+            }
+
+            if (stu == "pr") {
+                db_select.professor_info(request.session.login, function(res){
+                    fillid.push("#proid", "#office", "#grade");
+                    content.push(res["Proid"], res["Office"], res["Grade"]);
+                    var sendHtml = render.fillBlank(resHTML, fillid, content);
+                    response.send(sendHtml);
+                });
+            } else if (stu == "st") {
+                db_select.student_info(request.session.login, function(res){
+                    fillid.push("#sid", "#class");
+                    content.push(res["SID"], res["Class"]);
+                    var sendHtml = render.fillBlank(resHTML, fillid, content);
+                    response.send(sendHtml);
+                });
+            } else if (stu == "ta") {
+                db_select.ta_info(request.session.login, function(res){
+                    fillid.push("#taid", "#room");
+                    content.push(res["Taid"], res["Room"]);
+                    var sendHtml = render.fillBlank(resHTML, fillid, content);
+                    response.send(sendHtml);
+                });
+            } else if (stu == "om") {
+                db_select.orderMan_info(request.session.login, function(res){
+                    fillid.push("#omid");
+                    content.push(res["OMID"]);
+                    var sendHtml = render.fillBlank(resHTML, fillid, content);
+                    response.send(sendHtml);
+                });
+            }
+        });
+
     } else {
         response.redirect('/');
     }
@@ -165,9 +209,6 @@ app.post('/login_process', function(request, response){
     });
 });
 
-app.get('/order_book', function(request, response){
-});
-
 app.get('/logout', function(request, response){
     request.session.login = undefined;
     request.session.type = undefined;
@@ -203,25 +244,20 @@ io.on('connection', function(socket){
     });
 
     socket.on('update_member_ok', function(msg){
-        setStatusItem(msg);
+        var setting = fs.readFileSync(__dirname + "/setting/register.json");
+        var memebers = JSON.parse(setting)["memebers"];
+
+        for (var cnt = 0;cnt < memebers.length;cnt++) {
+            if (msg == memebers[cnt]["status"]) {
+                var sendmsg = {"other": memebers[cnt]["other"], "other_name": memebers[cnt]["other_name"]};
+                socket.emit("re_status", sendmsg);
+                break;
+            }
+        }
     });
     //io.emit('info', name + "上線，目前線上" + people_counter + "人");
 
 });
-
-
-function setStatusItem(stus) {
-    var setting = fs.readFileSync(__dirname + "/setting/register.json");
-    var memebers = JSON.parse(setting)["memebers"];
-
-    for (var cnt = 0;cnt < memebers.length;cnt++) {
-        if (stus == memebers[cnt]["status"]) {
-            var sendmsg = {"other": memebers[cnt]["other"], "other_name": memebers[cnt]["other_name"]};
-            socket.emit("re_status", sendmsg);
-            break;
-        }
-    }
-}
 
 server.listen("8000", config.get('IP'), function () {
     console.log( "Listening on " + config.get('IP') + ", port " + "8000");

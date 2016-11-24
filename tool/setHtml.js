@@ -49,6 +49,34 @@ function setButton(htmlFile, markid, formmethed, formaction, buttonname) {
     return res;
 }
 
+function setStatusItem(htmlFile, markid, otherid, otherName) {
+    var html = fs.readFileSync(htmlFile);
+    var $ = cheerio.load(html);
+    
+    for (var cnt = 0;cnt < otherid.length;cnt++) {
+        var str1 = `<p>${otherName[cnt]}</p>`;
+        var str2 = `<input type="text" class="other" id="${otherid[cnt]}" name="${otherid[cnt]}">`;
+        var str3 = `<p class="check" id="check_${otherid[cnt]}"></p>`
+        $(markid).append(str1);
+        $(markid).append(str2);
+        $(markid).append(str3);
+    }
+
+    var res = $.html();
+    return res;
+}
+
+function fillBlank(html, blankid, content) {
+    var $ = cheerio.load(html);
+
+    for (var cnt = 0;cnt < blankid.length;cnt++) {
+        $(blankid[cnt]).val(content[cnt]);
+    }
+
+    var res = $.html();
+    return res;
+}
+
 function setHTMLButton(html, markid, formmethed, formaction, buttonname) {
     var $ = cheerio.load(html);
     
@@ -65,4 +93,6 @@ module.exports.setDroplist = setDroplist;
 module.exports.setText = setText;
 module.exports.setTexts = setTexts;
 module.exports.setButton = setButton;
+module.exports.setStatusItem = setStatusItem;
 module.exports.setHTMLButton = setHTMLButton;
+module.exports.fillBlank = fillBlank;
