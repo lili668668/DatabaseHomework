@@ -3,40 +3,40 @@ var con = require('./dbConst.js');
 var mssql = require('mssql');
 var db_select = require('./select.js');
 
-function update_member(account, password, name, ssid, email, type, callback) {
+function update_member(account, name, ssid, email, callback) {
 
-    var sql = `update ${con.sMember} set ${con.sPassword}='${password}', ${con.sName}='${name}', ${con.sSsid}='${ssid}', ${con.sEmail}='${email}', ${con.sType}='${type}' where ${con.sAccount}='${account}';`;
+    var sql = `update ${con.sMember} set ${con.sName}='${name}', ${con.sSsid}='${ssid}', ${con.sEmail}='${email}' where ${con.sAccount}='${account}';`;
 
     set(sql, callback);
 
 }
 
-function update_professor(account, password, name, ssid, email, type, proid, office, grade) {
+function update_professor(account, name, ssid, email, proid, office, grade) {
 
     var sql = `update ${con.sProfessor} set ${con.sProid}='${proid}', ${con.sOffice}='${office}', ${con.sGrade}='${grade}' where ${con.sAccount}='${account}';`;
 
-    update_member(account, password, name, ssid, email, type, function(){set(sql);});
+    update_member(account, name, ssid, email, function(){set(sql);});
 }
 
-function update_ta(account, password, name, ssid, email, type, taid, room) {
+function update_ta(account, name, ssid, email, taid, room) {
 
     var sql = `update ${con.sTa} set ${con.sTaid}='${taid}', ${con.sRoom}='${room}' where ${con.sAccount}='${account}';`;
 
-    update_member(account, password, name, ssid, email, type, function(){set(sql);});
+    update_member(account, name, ssid, email, function(){set(sql);});
 
 }
 
-function update_student(account, password, name, ssid, email, type, sid, class_) {
+function update_student(account, name, ssid, email, sid, class_) {
 
     var sql = `update  ${con.sStudent} set ${con.sSID}='${ssid}', ${con.sClass}='${class_}' where ${con.sAccount}='${account}';`;
 
-    update_member(account, password, name, ssid, email, type, function(){set(sql);});
+    update_member(account, name, ssid, email, function(){set(sql);});
 }
 
-function update_orderMan(account, password, name, ssid, email, type, ordermanid) {
+function update_orderMan(account, name, ssid, email, ordermanid) {
 
     var sql = `update ${con.sOrderMan} set ${con.sOrderManid}='${ordermanid}' where ${con.sAccount}='${account}'`;
-    update_member(account, password, name, ssid, email, type, function(){set(sql);});
+    update_member(account, name, ssid, email, function(){set(sql);});
 }
 
 function add_book(bookid, bookname, price, author, publisher) {

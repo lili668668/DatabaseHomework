@@ -1,9 +1,5 @@
 var socket = io();
 $(function(){
-    setCheck("#account", function(){
-        return $("#account").val().length < 1;
-    }, "#checkAccount", "請輸入帳號");
-    
     setCheck("#name", function(){
         return $("#name").val().length < 1;
     }, "#checkName", "請輸入名字");

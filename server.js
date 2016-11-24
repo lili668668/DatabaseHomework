@@ -120,8 +120,8 @@ app.get('/update_member', function(request, response){
             var setting = fs.readFileSync(__dirname + "/setting/register.json");
             var memebers = JSON.parse(setting)["memebers"];
 
-            var fillid = ["#account", "#name", "#ssid", "#email"];
-            var content = [rows["Account"], rows["Name"], rows["SSID"], rows["Email"]];
+            var fillid = ["#name", "#ssid", "#email"];
+            var content = [rows["Name"], rows["SSID"], rows["Email"]];
             var resHTML = "";
             for (var cnt = 0;cnt < memebers.length;cnt++) {
                 if (mapStus[stu] == memebers[cnt]["status"]) {
@@ -233,6 +233,23 @@ app.post('/register_process', function(request, response){
     }
 
     request.session.login = row.account;
+
+    response.redirect("/");
+
+});
+
+app.post('/update_member_process', function(request, response){
+    var row = request.body;
+    var type = mapStus[request.session.type];
+    if (type == "professor") {
+        db_update.update_professor(request.session.login, row.name, row.ssid, row.email, row.proid, row.office, row.grade);
+    } else if (type == "TA") {
+        db_update.update_ta(request.session.login, row.name, row.ssid, row.email, row.taid, row.room);
+    } else if (type == "student") {
+        db_update.update_student(request.session.login, row.name, row.ssid, row.email, row.sid, row.class);
+    } else if (type == "order_man") {
+        db_update.update_orderMan(request.session.login, row.name, row.ssid, row.email, row.omid);
+    }
 
     response.redirect("/");
 
