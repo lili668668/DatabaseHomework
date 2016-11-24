@@ -103,6 +103,14 @@ function set(sqlstr, callback) {
 
 }
 
+function split(origin, spliter) {
+    var list = origin.split(spliter);
+    var newlist = [];
+    for (var l in list) {
+        newlist.push(l.trim());
+    }
+}
+
 module.exports.register_professor = register_professor;
 module.exports.register_ta = register_ta;
 module.exports.register_student = register_student;
