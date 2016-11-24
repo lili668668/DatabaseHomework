@@ -46,13 +46,24 @@ function add_book(bookid, bookname, price, author, publisher) {
 }
 
 function add_author(author, bookid) {
-    db_select.getAuthorId(function(authorid) {
+    var authorlist = split(author);
 
-        var sql = `insert into ${con.sAuthor}(${con.sAuthorId}, ${con.sAuthorName}) values('A${authorid}', '${author}');`;
-        set(sql, function(){
-            add_author_book(authorid, bookid);
+    for (var authorName in authorlist) {
+        db_select.verification_author(authorName, function(inAuthor){
+            if (inAuthor) {
+                db_select.getAuthorId(function(authorid) {
+                    var sql = `insert into ${con.sAuthor}(${con.sAuthorId}, ${con.sAuthorName}) values('A${authorid}', '${author}');`;
+                    set(sql, function(){
+                        add_author_book(authorid, bookid);
+                    });
+                });
+            
+            } else {
+                add_author_book(authorid, bookid);
+            }
         });
-    });
+    }
+
 }
 
 function add_author_book(authorid, bookid) {
@@ -109,6 +120,8 @@ function split(origin, spliter) {
     for (var l in list) {
         newlist.push(l.trim());
     }
+
+    return newlist;
 }
 
 module.exports.register_professor = register_professor;

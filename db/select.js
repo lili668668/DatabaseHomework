@@ -13,6 +13,17 @@ function verification_account(account, password, callback) {
     });
 }
 
+function verification_author(authorName, callback) {
+
+    var sql = `select ${con.sAuthorName} from [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] where ${con.sAuthorName} = '${authorName}';`;
+
+    set(sql, function(rows){
+        if (callback) {
+            callback(rows[0] !== undefined);
+        }
+    });
+}
+
 function account_info(account, callback) {
     var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sMember}] where ${con.sAccount} = '${account}';`;
     set(sql, function(rows){
@@ -128,6 +139,7 @@ function set(sqlstr, callback) {
 }
 
 module.exports.verification_account = verification_account;
+module.exports.verification_author = verification_author;
 module.exports.getType = getType;
 module.exports.account_info = account_info;
 module.exports.professor_info = professor_info;
