@@ -20,18 +20,19 @@ function verification_author(authorName, callback) {
     set(sql, function(rows){
         var flag = false;
         var cnt = 0;
-        for (;cnt < rows.legnth;cnt++) {
-            var rowName = rows[cnt]["Name"];
+        rows.forEach(function(element, index, array) {
+            var rowName = element["Name"];
             rowName = rowName.trim();
             if (rowName == authorName) {
                 flag = true;
-                break;
+                cnt = index;
+                return;
             }
-        }
-
+        });
         if (callback) {
             callback(flag, rows[cnt]["AuthorID"]);
         }
+
     });
 }
 
@@ -107,8 +108,6 @@ function getAuthorId(callback) {
             var count = parseInt(rows[0]["cou"], 10) + 1;
             callback(count);
         }
-
-
     });
 }
 
