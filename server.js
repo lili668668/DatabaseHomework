@@ -34,7 +34,7 @@ app.get('/', function(request,response){
     if (request.session.login) {
         if (request.session.type == 'om') {
             var sendHtml = render.setButton(__dirname + "/html/login_index.html", "#insert", "GET", "/manage_book", "管理書籍");
-            sendHtml = render.setHTMLButton(sendHtml, "#insert", "GET", "/manage_store", "管理書店");
+            sendHtml = render.setHTMLButton(sendHtml, "#insert", "GET", "/manage_bookstore", "管理書店");
             response.send(sendHtml);
         } else {
             response.sendFile(__dirname + "/html/login_index.html");
@@ -192,6 +192,24 @@ app.post('/add_book_process', function(request, response){
     console.log(row.author);
     db_insert.add_book(row.id, row.name, row.price, row.author, row.publisher);
     response.redirect('/manage_book');
+});
+
+app.get('/manage_bookstore', function(request, response) {
+    if (request.session.login && request.session.type == 'om') {
+        response.sendFile(__dirname + '/html/manage_bookstore.html');
+    } else {
+        response.redirect('/');
+    }
+
+});
+
+app.get('/add_bookstore', function(request, response) {
+    if (request.session.login && request.session.type == 'om') {
+        response.sendFile(__dirname + '/html/add_bookstore.html');
+    } else {
+        response.redirect('/');
+    }
+    
 });
 
 app.post('/login_process', function(request, response){

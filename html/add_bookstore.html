@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+    <head>
+        <title>新增書店</title>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+        <link rel="stylesheet" href="css/add_bookstore.css" type="text/css" media="all" />
+    </head>
+    <body>
+        <h1>新增書店</h1>
+        <form method="POST" action="/add_bookstore_process" id="form">
+            <p>書店代碼</p>
+            <input id="id" name="id" type="text">
+            <p class="check" id="checkId"></p>
+            <p>書店名稱</p>
+            <input name="name" id="name" type="text">
+            <p class="check" id="checkName"></p>
+            <p>所在城市</p>
+            <input name="city" id="city" type="text"> 
+            <p class="check" id="checkCity"></p>
+            <p>書店電話</p>
+            <input name="phone" id="phone" type="text">
+            <p class="check" id="checkPhone"></p>
+            <button id="submit" type="submit" disabled>提交</button>
+        </form>
+        <form method="GET" action="/manage_book">
+            <button id="cancel" type="submit">取消</button>
+        </form>
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<script src="js/add_bookstore.js"></script>
+    </body>
+</html>
