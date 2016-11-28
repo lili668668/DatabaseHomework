@@ -213,6 +213,7 @@ app.post('/login_process', function(request, response){
 app.get('/logout', function(request, response){
     request.session.login = undefined;
     request.session.type = undefined;
+    request.session.logfail = undefined;
     response.redirect("/");
 });
 

@@ -8,7 +8,7 @@ function verification_account(account, password, callback) {
 
     set(sql, function(rows){
         if (callback) {
-            callback(password === rows[0]["Password"]);
+            callback(password === rows[0][con.sPassword]);
         }
     });
 }
