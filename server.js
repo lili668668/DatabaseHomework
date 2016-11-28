@@ -183,15 +183,18 @@ app.get('/add_book', function(request, response){
 });
 
 app.post('/add_book_process', function(request, response){
-    var row = request.body;
-    if (!row) {
+    if (request.session.login && request.session.type == 'om') {
+        var row = request.body;
+        if (!row) {
+            response.redirect('/manage_book');
+            return;
+        }
+        
+        db_insert.add_book(row.id, row.name, row.price, row.author, row.publisher);
         response.redirect('/manage_book');
-        return;
+    } else {
+        response.redirect('/');
     }
-    
-    console.log(row.author);
-    db_insert.add_book(row.id, row.name, row.price, row.author, row.publisher);
-    response.redirect('/manage_book');
 });
 
 app.get('/manage_bookstore', function(request, response) {
@@ -209,7 +212,19 @@ app.get('/add_bookstore', function(request, response) {
     } else {
         response.redirect('/');
     }
-    
+});
+
+app.post('/add_bookstore_process', function(request, response) {
+    if (request.session.login && request.session.type == 'om') {
+        var row = request.body;
+        if (!row) {
+            response.redirect('/manage_bookstore');
+        } else {
+
+        }
+    } else {
+        response.redirect('/');
+    }
 });
 
 app.post('/login_process', function(request, response){

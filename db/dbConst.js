@@ -14,6 +14,8 @@ const sOrderMan = 'ORDER_MAN';
 const sBook = 'BOOK';
 const sAuthor = 'AUTHOR';
 const sAuthorBook = 'AUTHOR_BOOK_LIST';
+const sBookStore = 'BOOKSTORE';
+const sBookStoreBook = 'BOOKSTORE_BOOK_LIST';
 
 // memeber
 const sAccount = 'account';

@@ -77,6 +77,10 @@ function add_author_book(authorid, bookid) {
 
 }
 
+function add_bookstore(bsid, bsname, city, bsphone) {
+    var sql = `insert into ${con.s}`
+}
+
 function set(sqlstr, callback) {
     var connection = new mssql.Connection(config);
     connection.connect(function(err) {
