@@ -220,7 +220,8 @@ app.post('/add_bookstore_process', function(request, response) {
         if (!row) {
             response.redirect('/manage_bookstore');
         } else {
-
+            db_insert.add_bookstore(row.id, row.name, row.city, row.phone);
+            response.redirect('/manage_bookstore');
         }
     } else {
         response.redirect('/');

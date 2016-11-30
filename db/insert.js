@@ -139,3 +139,4 @@ module.exports.register_ta = register_ta;
 module.exports.register_student = register_student;
 module.exports.register_orderMan = register_orderMan;
 module.exports.add_book = add_book;
+module.exports.add_bookstore = add_bookstore;

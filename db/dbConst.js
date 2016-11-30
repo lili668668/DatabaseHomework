@@ -76,6 +76,8 @@ module.exports = {
     sBook: sBook,
     sAuthor: sAuthor,
     sAuthorBook: sAuthorBook,
+    sBookStore: sBookStore,
+    sBookStoreBook: sBookStoreBook,
 
     // memeber
     sAccount: sAccount,
@@ -108,6 +110,12 @@ module.exports = {
     sBookName: sBookName,
     sPrice: sPrice,
     sPublisher: sPublisher,
+
+    // BOOKSTORE
+    sBSID: sBSID,
+    sBSName: sBSName,
+    sCity: sCity,
+    sBSPhone: sBSPhone,
 
     // AUTHOR
     sAuthorId: sAuthorId,
