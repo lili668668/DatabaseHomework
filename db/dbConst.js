@@ -49,6 +49,12 @@ const sBookName = 'bookname';
 const sPrice = 'price';
 const sPublisher = 'publisher';
 
+// BOOKSTORE
+const sBSID = 'bsid';
+const sBSName = 'bsname';
+const sCity = 'city';
+const sBSPhone = 'bsphone';
+
 // AUTHOR
 const sAuthorId = 'authorid';
 const sAuthorName = 'name';

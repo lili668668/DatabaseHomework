@@ -78,7 +78,10 @@ function add_author_book(authorid, bookid) {
 }
 
 function add_bookstore(bsid, bsname, city, bsphone) {
-    var sql = `insert into ${con.s}`
+
+    var sql = `insert into ${con.sBookStore}(${con.sBSID}, ${con.sBSName}, ${con.sCity}, ${con.sBSPhone}) values('${bsid}', '${bsname}', '${city}', '${bsphone}')`;
+
+    set(sql);
 }
 
 function set(sqlstr, callback) {
