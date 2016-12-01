@@ -189,7 +189,7 @@ app.post('/add_book_process', function(request, response){
             response.redirect('/manage_book');
             return;
         }
-        
+
         db_insert.add_book(row.id, row.name, row.price, row.author, row.publisher);
         response.redirect('/manage_book');
     } else {
@@ -230,7 +230,7 @@ app.post('/add_bookstore_process', function(request, response) {
         if (!row) {
             response.redirect('/manage_bookstore');
         } else {
-            db_insert.add_bookstore(row.id, row.name, row.city, row.phone);
+            db_insert.add_bookstore(row.id, row.name, row.city, row.phone, request.session.login);
             response.redirect('/manage_bookstore');
         }
     } else {
@@ -303,7 +303,19 @@ app.post('/update_member_process', function(request, response){
 
 io.on('connection', function(socket){
     socket.on('status', function(msg) {
-        setStatusItem(msg);
+        var setting = fs.readFileSync(__dirname + "/setting/register.json");
+        var memebers = JSON.parse(setting)["memebers"];
+
+        for (var cnt = 0;cnt < memebers.length;cnt++) {
+            if (msg == memebers[cnt]["status"]) {
+                var sendmsg = {"other": memebers[cnt]["other"], "other_name": memebers[cnt]["other_name"]};
+                socket.emit("re_status", sendmsg);
+                break;
+
+            }
+
+        }
+
     });
 
     socket.on('update_member_ok', function(msg){
