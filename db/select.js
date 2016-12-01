@@ -102,13 +102,24 @@ function orderMan_get_bookstore(account, callback) {
 
 function bookstore_get_allBook(bsid, callback) {
 
-    var sql = `select ${con.sBookId} from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBSID} = bsid;`;
+    var sql = `select ${con.sBookId} from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBSID} = '${bsid}';`;
 
     set(sql, function(rows) {
         if (callback) {
             callback(rows);
         }
     });
+}
+
+function book_exist(bsid, bookid, callback) {
+
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBSID} = '${bsid}' and ${con.sBookId} = '${bookid}';`;
+
+    set(sql, function(rows){
+        if (callback) {
+            callback(rows.length != 0);
+        }
+    })
 }
 
 function getType(account, callback) {
@@ -193,6 +204,7 @@ module.exports.student_info = student_info;
 module.exports.orderMan_info = orderMan_info;
 module.exports.orderMan_get_bookstore = orderMan_get_bookstore;
 module.exports.bookstore_get_allBook = bookstore_get_allBook;
+module.exports.book_exist = book_exist;
 module.exports.getAuthorId = getAuthorId;
 module.exports.getAllBookstores = getAllBookstores;
 module.exports.getAllAccounts = getAllAccounts;

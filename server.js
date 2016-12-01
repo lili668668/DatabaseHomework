@@ -349,6 +349,12 @@ io.on('connection', function(socket){
             }
         }
     });
+
+    socket.on('checkBookExist', function(msg){
+        db_select.book_exist(msg['bsid'], msg['bookid'], function(flag) {
+            socket.emit('checkBookRes', flag);
+        });
+    });
     //io.emit('info', name + "上線，目前線上" + people_counter + "人");
 
 });

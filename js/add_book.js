@@ -1,8 +1,15 @@
 var socket = io();
 $(function(){
-    setCheck("#id", function(){
-        return $("#id").val().length < 1;
-    }, "#checkId", "請輸入書籍編號");
+    $("#id").keyup(function(){
+        if ($(this).val().length < 1) {
+            $("#checkId").text("請輸入書籍編號");
+        } else {
+            if ($("#bookstore").val() != 'none') {
+                var msg = {"bookid": $(this).val(), "bsid": $("#bookstore").val()};
+                socket.emit("checkBookExist", msg);
+            }
+        }
+    });
     
     setCheck("#name", function(){
         return $("#name").val().length < 1;
@@ -62,11 +69,10 @@ function checkSubmit() {
     }
 }
 
-function checkBookExist(bookid, bsid) {
-    if (bsid == 'none') {
-        return false;
+socket.on("checkBookRes", function(msg){
+    if (msg) {
+        $("#checkId").text("已有此書");
     } else {
-
-        var msg = {"bookid": bookid, }
+        $("#checkId").text("");
     }
-}
+});
