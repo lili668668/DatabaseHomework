@@ -166,11 +166,41 @@ function getType(account, callback) {
 
 function getAuthorId(callback) {
 
-    var sql = `select count(${con.sAuthorId}) as cou from [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}]`;
+    var sql = `select ${con.sAuthorId} from [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}]`;
 
     set(sql, function(rows){
         if (callback) {
-            var count = parseInt(rows[0]["cou"], 10) + 1;
+            var max = 1;
+            rows.forEach(function(element, index, array) {
+                var no = element.substr(1, element.length - 1);
+                var num = parseInt(no, 10);
+                if (max < num) {
+                    max = num;
+                }
+            });
+
+            var count = max + 1;
+            callback(count);
+        }
+    });
+}
+
+function getOrderNo(callback) {
+
+    var sql = `select ${con.sOrderNo} from [${con.sRoot}].[${con.sDbo}].[${con.sOrder}]`;
+
+    set(sql, function(rows){
+        if (callback) {
+            var max = 1;
+            rows.forEach(function(element, index, array) {
+                var no = element.substr(1, element.length - 1);
+                var num = parseInt(no, 10);
+                if (max < num) {
+                    max = num;
+                }
+            });
+
+            var count = max + 1;
             callback(count);
         }
     });
@@ -251,6 +281,7 @@ module.exports.account_exist = account_exist;
 module.exports.bookstore_exist = book_exist;
 module.exports.getType = getType;
 module.exports.getAuthorId = getAuthorId;
+module.exports.getOrderNo = getOrderNo;
 module.exports.getBookPrice = getBookPrice;
 module.exports.getAllBookstores = getAllBookstores;
 module.exports.getAllAccounts = getAllAccounts;

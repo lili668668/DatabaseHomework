@@ -257,6 +257,10 @@ app.post('/add_bookstore_process', function(request, response) {
     }
 });
 
+app.get('/add_order', function(request, response) {
+
+});
+
 app.post('/login_process', function(request, response){
     var row = request.body;
     db_select.verification_account(row.account, row.password, function(bool){

@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+    <head>
+        <title>新增訂單</title>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+        <link rel="stylesheet" href="css/add_order.css" type="text/css" media="all" />
+    </head>
+    <body>
+        <h1>新增訂單</h1>
+        <form method="POST" action="/add_order_process" id="form">
+            <p>訂單編號 <span name="id" id="id"></span></p>
+            <p>書店</p>
+            <select name="bookstore" id="bookstore">
+                <option value="none" selected>請選擇書店</option>
+            </select>
+            <div id="books_info"></div>
+            <button id="submit" type="submit" disabled>提交</button>
+        </form>
+        <form method="GET" action="/">
+            <button id="cancel" type="submit">取消</button>
+        </form>
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<script src="js/add_order.js"></script>
+    </body>
+</html>
