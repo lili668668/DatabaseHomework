@@ -199,7 +199,17 @@ app.post('/add_book_process', function(request, response){
 
 app.get('/manage_bookstore', function(request, response) {
     if (request.session.login && request.session.type == 'om') {
-        response.sendFile(__dirname + '/html/manage_bookstore.html');
+        db_select.orderMan_get_bookstore(request.session.login, function(row){
+            var sendstr = "";
+            if (row) {
+                var titles = ["目前所屬書店:", "書店名稱:", "書店城市:", "書店電話:"];
+                var texts = [row["BSID"], row["BSName"], row["City"], row["BSPhone"]];
+                sendstr = render.setTexts(__dirname + '/html/manage_bookstore.html', '#info', titles, texts);
+            } else {
+                sendstr = render.setButton(__dirname + '/html/manage_bookstore.html', '#add_bookstore', "GET", "/add_bookstore", "新增書店");
+            }
+            response.send(sendstr);
+        });
     } else {
         response.redirect('/');
     }

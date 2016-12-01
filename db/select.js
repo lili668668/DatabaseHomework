@@ -89,6 +89,17 @@ function orderMan_info(account, callback) {
     });
 }
 
+function orderMan_get_bookstore(account, callback) {
+
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] where ${con.sAccount} = '${account}';`;
+
+    set(sql, function(rows) {
+        if (callback) {
+            callback(rows[0]);
+        }
+    });
+}
+
 function getType(account, callback) {
     var sql = `select ${con.sType} from [${con.sRoot}].[${con.sDbo}].[${con.sMember}] where ${con.sAccount} = '${account}';`
 
@@ -147,4 +158,5 @@ module.exports.professor_info = professor_info;
 module.exports.ta_info = ta_info;
 module.exports.student_info = student_info;
 module.exports.orderMan_info = orderMan_info;
+module.exports.orderMan_get_bookstore = orderMan_get_bookstore;
 module.exports.getAuthorId = getAuthorId;
