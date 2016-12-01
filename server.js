@@ -209,7 +209,7 @@ app.post('/add_book_process', function(request, response){
             return;
         }
 
-        db_insert.add_book(row.id, row.name, row.price, row.author, row.publisher);
+        db_insert.add_book(row.id, row.name, row.price, row.author, row.publisher, row.bookstore);
         response.redirect('/manage_book');
     } else {
         response.redirect('/');

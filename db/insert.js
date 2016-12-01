@@ -35,14 +35,21 @@ function register_orderMan(account, password, name, ssid, email, type, ordermani
     register_member(account, password, name, ssid, email, type, function(){set(sql);});
 }
 
-function add_book(bookid, bookname, price, author, publisher) {
+function add_book(bookid, bookname, price, author, publisher, bsid) {
 
     var sql = `insert into ${con.sBook}(${con.sBookId}, ${con.sBookName}, ${con.sPrice}, ${con.sPublisher}) values('${bookid}', '${bookname}', '${price}', '${publisher}');`;
 
     set(sql, function(){
+        add_bookstore_book(bookid, bsid);
         add_author(author, bookid);
     });
 
+}
+
+function add_bookstore_book(bookid, bsid) {
+
+    var sql = `insert into ${con.sBookStoreBook}(${con.sBSID}, ${con.sBookId}) values('${bsid}', '${bookid}');`;
+    set(sql);
 }
 
 function add_author(author, bookid) {
