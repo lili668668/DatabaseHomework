@@ -122,6 +122,17 @@ function getAuthorId(callback) {
     });
 }
 
+function getAllBookstores(callback) {
+
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}]`;
+
+    set(sql, function(rows) {
+        if (callback) {
+            callback(rows);
+        }
+    });
+}
+
 function set(sqlstr, callback) {
     var connection = new mssql.Connection(config);
     var rows = [];
@@ -160,3 +171,4 @@ module.exports.student_info = student_info;
 module.exports.orderMan_info = orderMan_info;
 module.exports.orderMan_get_bookstore = orderMan_get_bookstore;
 module.exports.getAuthorId = getAuthorId;
+module.exports.getAllBookstores = getAllBookstores;

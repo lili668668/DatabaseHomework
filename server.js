@@ -176,7 +176,26 @@ app.get('/manage_book', function(request, response){
 
 app.get('/add_book', function(request, response){
     if (request.session.login && request.session.type == 'om') {
-        response.sendFile(__dirname + '/html/add_book.html');
+        db_select.orderMan_get_bookstore(request.session.login, function(row) {
+            db_select.getAllBookstores(function(rows) {
+                var bookstoreId_array = [];
+                for (var cnt = 0;cnt < rows.length;cnt++) {
+                    bookstoreId_array.push(rows[cnt]['BSID']);
+                }
+                var bookstoreName_array = [];
+                for (var cnt = 0;cnt < rows.length;cnt++) {
+                    bookstoreName_array.push(rows[cnt]['BSName']);
+                }
+
+                var sendstr = render.setAddBook_Bookstore(
+                        __dirname + '/html/add_book.html',
+                        '#bookstore_info',
+                        row,
+                        bookstoreId_array,
+                        bookstoreName_array);
+                response.send(sendstr);
+            });
+        });
     } else {
         response.redirect('/');
     }

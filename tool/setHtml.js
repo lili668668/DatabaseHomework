@@ -89,6 +89,30 @@ function setHTMLButton(html, markid, formmethed, formaction, buttonname) {
     return res;
 }
 
+function setAddBook_Bookstore(htmlFile, markid, belongBookstore, bookstoreId_array, bookstoreName_array) {
+    var html = fs.readFileSync(htmlFile);
+    var $ = cheerio.load(html);
+
+    var str = '<select name="bookstore" id="bookstore">';
+    if (belongBookstore) {
+
+        str += `<option value="${belongBookstore['BSID']}" selected>${belongBookstore['BSName']}</option>`
+    } else {
+        var len = bookstoreId_array.length;
+        str += '<option value="none" selected>請選擇擁有書店</option>';
+        for (var cnt = 0;cnt < len;cnt++) {
+            str += `<option value="${bookstoreId_array[cnt]}">${bookstoreName_array[cnt]}</option>`;
+        }
+    }
+
+    str += "</select>";
+
+    $(markid).append(str);
+    var res = $.html();
+    return res;
+
+}
+
 module.exports.setDroplist = setDroplist;
 module.exports.setText = setText;
 module.exports.setTexts = setTexts;
@@ -96,3 +120,4 @@ module.exports.setButton = setButton;
 module.exports.setStatusItem = setStatusItem;
 module.exports.setHTMLButton = setHTMLButton;
 module.exports.fillBlank = fillBlank;
+module.exports.setAddBook_Bookstore = setAddBook_Bookstore;
