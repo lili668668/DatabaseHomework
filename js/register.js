@@ -1,8 +1,13 @@
 var socket = io();
 $(function(){
-    setCheck("#account", function(){
-        return $("#account").val().length < 1;
-    }, "#checkAccount", "請輸入帳號");
+    $("#account").keyup(function(){
+        if ($(this).val().length < 1) {
+            $("#checkId").text("請輸入帳號");
+        } else {
+            socket.emit("checkAccountExist", $(this).val());
+        }
+    })
+    .keyup();
     
     setCheck("#password", function(){
         return $("#password").val().length < 4;
@@ -100,4 +105,12 @@ socket.on("re_status", function(msg){
         .keyup();
     });
 
+});
+
+socket.on("checkAccountRes", function(msg){
+    if (msg) {
+        $("#checkAccount").text("已有此帳號");
+    } else {
+        $("#checkAccount").text("");
+    }
 });

@@ -1,8 +1,13 @@
 var socket = io();
 $(function(){
-    setCheck("#id", function(){
-        return $("#id").val().length < 1;
-    }, "#checkId", "請輸入書店編號");
+    $("#id").keyup(function(){
+        if ($(this).val().length < 1) {
+            $("#checkId").text("請輸入書店編號");
+        } else {
+            socket.emit("checkBookstoreExist", $(this).val());
+        }
+    })
+    .keyup();
     
     setCheck("#name", function(){
         return $("#name").val().length < 1;
@@ -47,3 +52,11 @@ function checkSubmit() {
         $("#submit").prop("disabled", true);
     }
 }
+
+socket.on("checkBookstoreRes", function(msg){
+    if (msg) {
+        $("#checkId").text("已有此書店");
+    } else {
+        $("#checkId").text("");
+    }
+});

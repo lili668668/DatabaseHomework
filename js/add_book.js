@@ -9,7 +9,8 @@ $(function(){
                 socket.emit("checkBookExist", msg);
             }
         }
-    });
+    })
+    .keyup();
     
     setCheck("#name", function(){
         return $("#name").val().length < 1;

@@ -122,6 +122,27 @@ function book_exist(bookid, callback) {
     });
 }
 
+function account_exist(account, callback) {
+
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sMember}] where ${con.sAccount} = '${account}';`;
+
+    set(sql, function(rows){
+        if (callback) {
+            callback(rows.length != 0);
+        }
+    });
+}
+
+function bookstore_exist(bsid, callback) {
+
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] where ${con.sBSID} = '${bsid}';`;
+    set(sql, function(rows){
+        if (callback) {
+            callback(rows.length != 0);
+        }
+    });
+}
+
 function book_exist(bsid, bookid, callback) {
 
     var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBSID} = '${bsid}' and ${con.sBookId} = '${bookid}';`;
@@ -216,6 +237,8 @@ module.exports.orderMan_info = orderMan_info;
 module.exports.orderMan_get_bookstore = orderMan_get_bookstore;
 module.exports.bookstore_get_allBook = bookstore_get_allBook;
 module.exports.book_exist = book_exist;
+module.exports.account_exist = account_exist;
+module.exports.bookstore_exist = book_exist;
 module.exports.getAuthorId = getAuthorId;
 module.exports.getAllBookstores = getAllBookstores;
 module.exports.getAllAccounts = getAllAccounts;

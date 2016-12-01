@@ -355,6 +355,18 @@ io.on('connection', function(socket){
             socket.emit('checkBookRes', flag);
         });
     });
+
+    socket.on('checkAccountExist', function(msg){
+        db_select.account_exist(msg, function(flag){
+            socket.emit('checkAccountRes', flag);
+        });
+    });
+
+    socket.on('checkBookstoreExist', function(msg){
+        db_select.bookstore_exist(msg, function(flag){
+            socket.emit('checkBookstoreRes', flag);
+        });
+    });
     //io.emit('info', name + "上線，目前線上" + people_counter + "人");
 
 });
