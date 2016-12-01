@@ -16,6 +16,8 @@ const sAuthor = 'AUTHOR';
 const sAuthorBook = 'AUTHOR_BOOK_LIST';
 const sBookStore = 'BOOKSTORE';
 const sBookStoreBook = 'BOOKSTORE_BOOK_LIST';
+const sOrder = 'ORDER';
+const sOrderBook = 'ORDER_BOOK_RECORD';
 
 // memeber
 const sAccount = 'account';
@@ -58,6 +60,14 @@ const sBSPhone = 'bsphone';
 // AUTHOR
 const sAuthorId = 'authorid';
 const sAuthorName = 'name';
+
+// ORDER
+const sOrderNo = 'orderno';
+const sOrderTime = 'ordertime';
+const sTotalPrice = 'total_price';
+
+// ORDER_BOOK_RECORD
+const sBookCount = 'book_count';
 
 module.exports = {
     // root

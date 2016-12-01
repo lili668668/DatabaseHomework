@@ -176,6 +176,17 @@ function getAuthorId(callback) {
     });
 }
 
+function getBookPrice(bsid, bookid, callback) {
+
+    var sql = `select ${con.sPrice} from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBookId} = '${bookid}' and ${con.sBSID} = '${bsid}';`;
+
+    set(sql, function(rows){
+        if (callback) {
+            callback(rows[0][${con.sPrice}]);
+        }
+    });
+}
+
 function getAllBookstores(callback) {
 
     var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}]`;
@@ -228,7 +239,6 @@ function set(sqlstr, callback) {
 
 module.exports.verification_account = verification_account;
 module.exports.verification_author = verification_author;
-module.exports.getType = getType;
 module.exports.account_info = account_info;
 module.exports.professor_info = professor_info;
 module.exports.ta_info = ta_info;
@@ -239,6 +249,8 @@ module.exports.bookstore_get_allBook = bookstore_get_allBook;
 module.exports.book_exist = book_exist;
 module.exports.account_exist = account_exist;
 module.exports.bookstore_exist = book_exist;
+module.exports.getType = getType;
 module.exports.getAuthorId = getAuthorId;
+module.exports.getBookPrice = getBookPrice;
 module.exports.getAllBookstores = getAllBookstores;
 module.exports.getAllAccounts = getAllAccounts;

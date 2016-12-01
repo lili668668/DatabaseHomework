@@ -40,12 +40,12 @@ function add_book(bookid, bookname, price, author, publisher, bsid) {
     // TODO: 需要測試此功能
     db_select.book_exist(bookid, function(flag) {
         if (flag) {
-            add_bookstore_book(bookid, bsid);
+            add_bookstore_book(bookid, bsid, price);
         } else {
-            var sql = `insert into ${con.sBook}(${con.sBookId}, ${con.sBookName}, ${con.sPrice}, ${con.sPublisher}) values('${bookid}', '${bookname}', '${price}', '${publisher}');`;
+            var sql = `insert into ${con.sBook}(${con.sBookId}, ${con.sBookName}, ${con.sPublisher}) values('${bookid}', '${bookname}', '${publisher}');`;
 
             set(sql, function(){
-                add_bookstore_book(bookid, bsid);
+                add_bookstore_book(bookid, bsid, price);
                 add_author(author, bookid);
             });
 
@@ -54,9 +54,9 @@ function add_book(bookid, bookname, price, author, publisher, bsid) {
 
 }
 
-function add_bookstore_book(bookid, bsid) {
+function add_bookstore_book(bookid, bsid, price) {
 
-    var sql = `insert into ${con.sBookStoreBook}(${con.sBSID}, ${con.sBookId}) values('${bsid}', '${bookid}');`;
+    var sql = `insert into ${con.sBookStoreBook}(${con.sBSID}, ${con.sBookId}, ${con.sPrice}) values('${bsid}', '${bookid}', '${price}');`;
     set(sql);
 }
 
@@ -97,6 +97,31 @@ function add_bookstore(bsid, bsname, city, bsphone, account) {
     var sql = `insert into ${con.sBookStore}(${con.sBSID}, ${con.sBSName}, ${con.sCity}, ${con.sBSPhone}, ${con.sAccount}) values('${bsid}', '${bsname}', '${city}', '${bsphone}', '${account}')`;
 
     set(sql);
+}
+
+function add_order(orderno, account, bsid, bookid_array, bookcount_array) {
+    var total_price = 0;
+    bookid_array.forEach(function(element, index, array){
+        db_select.getBookPrice(bsid, element, function(price){
+            total_price += bookcount_array[index] * parseInt(price);
+        });
+    });
+
+    var sql = `insert into ${con.sOrder}(${con.sOrderNo}, ${con.sOrderTime}, ${con.sAccount}, ${con.sTotalPrice}) values('${orderno}', SYSDATETIME(), '${account}', '${total_price}');`;
+
+    set(sql, function(){
+        add_order_book(orderno, bsid, bookid_array, bookcount_array);
+    });
+}
+
+function add_order_book(orderno, bsid, bookid_array, bookcount_array) {
+    bookid_array.forEach(function(element, index, array){
+
+        var sql = `insert into ${con.sOrderBook}(${con.sOrderNo}, ${con.sBSID}, ${con.sBookId}, ${con.sBookCount}) values('${orderno}', '${bsid}', '${element}', '${bookcount_array[index]}');`;
+
+        set(sql);
+    });
+
 }
 
 function set(sqlstr, callback) {
@@ -155,3 +180,4 @@ module.exports.register_student = register_student;
 module.exports.register_orderMan = register_orderMan;
 module.exports.add_book = add_book;
 module.exports.add_bookstore = add_bookstore;
+module.exports.add_order = add_order;
