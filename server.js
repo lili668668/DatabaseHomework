@@ -258,7 +258,21 @@ app.post('/add_bookstore_process', function(request, response) {
 });
 
 app.get('/add_order', function(request, response) {
-
+    if (request.session.login) {
+        db_select.getAllBookstores(function(rows){
+            var values = [];
+            for (var cnt = 0;cnt < rows.length;cnt++) {
+                values.push(rows[cnt]["BSID"]);
+            }
+            var options = [];
+            for (var cnt = 0;cnt < rows.length;cnt++) {
+                options.push(rows[cnt]["BSName"]);
+            }
+            var sendstr = render.setDroplist(__dirname + "/html/add_order.html", "#bookstore", values, options);
+        });
+    } else {
+        response.redirect("/");
+    }
 });
 
 app.post('/login_process', function(request, response){
@@ -369,6 +383,21 @@ io.on('connection', function(socket){
     socket.on('checkBookstoreExist', function(msg){
         db_select.bookstore_exist(msg, function(flag){
             socket.emit('checkBookstoreRes', flag);
+        });
+    });
+
+    socket.on("openBook", function(msg){
+        db_select.bookstore_get_allBook(msg, function(rows){
+            var bookInfo = [];
+            var price = [];
+            rows.forEach(function(element, index, array){
+                price.push(element["Price"]);
+                db_select.book_info(element["BookID"], function(bookrows){
+                    bookInfo.push(bookrows[0]);
+                });
+            });
+            var msg = {"bookInfo": bookInfo, "price": price};
+            socket.emit("openBookRes", msg);
         });
     });
     //io.emit('info', name + "上線，目前線上" + people_counter + "人");

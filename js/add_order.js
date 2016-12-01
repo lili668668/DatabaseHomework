@@ -1,38 +1,11 @@
 var socket = io();
 $(function(){
-    $("#id").keyup(function(){
-        if ($(this).val().length < 1) {
-            $("#checkId").text("請輸入書籍編號");
-        } else {
-            if ($("#bookstore").val() != 'none') {
-                var msg = {"bookid": $(this).val(), "bsid": $("#bookstore").val()};
-                socket.emit("checkBookExist", msg);
-            }
-        }
-    })
-    .keyup();
-    
-    setCheck("#name", function(){
-        return $("#name").val().length < 1;
-    }, "#checkName", "請輸入書籍名稱");
-    
-    setCheck("#author", function(){
-        return $("#author").val().length < 1;
-    }, "#checkAuthor", "請輸入作者");
-
-    setCheck("#price", function(){
-        return $("#price").val().length < 1 && $("#price").val() < 0;
-    }, "#checkPrice", "請輸入正數");
-    
-    setCheck("#publisher", function(){
-        return $("#publisher").val().length < 1;
-    }, "#checkPulisher", "請輸入出版商");
-
     $("#bookstore").change(function() {
         if ( $( this ).val() == "none" ) {
             $("#checkBookstore").text("請選擇一家書店");
         } else {
             $("#checkStatus").text("");
+            socket.emit("openBook", $(this).val());
         }
         checkSubmit();
     })
@@ -70,10 +43,18 @@ function checkSubmit() {
     }
 }
 
-socket.on("checkBookRes", function(msg){
-    if (msg) {
-        $("#checkId").text("已有此書");
-    } else {
-        $("#checkId").text("");
-    }
+socket.on("openBookRes", function(msg){
+    var str = '<p>請問購買幾種書？</p><input name="bookSpeciesNum" id="bookSpeciesNum" type="number"><p id="checkBookSpeciesNum"></p>';
+    $("#books_info").append(str);
+    $("#bookSpeciesNum").keyup(function(){
+        var tmp = $(this).val();
+        if (tmp < 1) {
+            $("#checkBookSpeciesNum").text("請輸入至少一本書");
+        } else if (isNaN(parseInt(tmp))) {
+            $("#bookSpeciesNum").text("請輸入正數");
+        } else {
+
+        }
+    })
+    .keyup();
 });
