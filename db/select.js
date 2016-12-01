@@ -111,6 +111,17 @@ function bookstore_get_allBook(bsid, callback) {
     });
 }
 
+function book_exist(bookid, callback) {
+
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBookId} = '${bookid}';`;
+
+    set(sql, function(rows) {
+        if (callback) {
+            callback(rows != 0);
+        }
+    });
+}
+
 function book_exist(bsid, bookid, callback) {
 
     var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBSID} = '${bsid}' and ${con.sBookId} = '${bookid}';`;

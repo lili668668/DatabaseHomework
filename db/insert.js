@@ -37,11 +37,19 @@ function register_orderMan(account, password, name, ssid, email, type, ordermani
 
 function add_book(bookid, bookname, price, author, publisher, bsid) {
 
-    var sql = `insert into ${con.sBook}(${con.sBookId}, ${con.sBookName}, ${con.sPrice}, ${con.sPublisher}) values('${bookid}', '${bookname}', '${price}', '${publisher}');`;
+    // TODO: 需要測試此功能
+    db_select.book_exist(bookid, function(flag) {
+        if (flag) {
+            add_bookstore_book(bookid, bsid);
+        } else {
+            var sql = `insert into ${con.sBook}(${con.sBookId}, ${con.sBookName}, ${con.sPrice}, ${con.sPublisher}) values('${bookid}', '${bookname}', '${price}', '${publisher}');`;
 
-    set(sql, function(){
-        add_bookstore_book(bookid, bsid);
-        add_author(author, bookid);
+            set(sql, function(){
+                add_bookstore_book(bookid, bsid);
+                add_author(author, bookid);
+            });
+
+        }
     });
 
 }
