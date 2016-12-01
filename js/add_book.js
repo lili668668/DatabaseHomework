@@ -61,3 +61,12 @@ function checkSubmit() {
         $("#submit").prop("disabled", true);
     }
 }
+
+function checkBookExist(bookid, bsid) {
+    if (bsid == 'none') {
+        return false;
+    } else {
+
+        var msg = {"bookid": bookid, }
+    }
+}
