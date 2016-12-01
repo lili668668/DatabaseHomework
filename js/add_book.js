@@ -19,6 +19,16 @@ $(function(){
     setCheck("#publisher", function(){
         return $("#publisher").val().length < 1;
     }, "#checkPulisher", "請輸入出版商");
+
+    $("#bookstore").change(function() {
+        if ( $( this ).val() == "none" ) {
+            $("#checkBookstore").text("請選擇一家書店");
+        } else {
+            $("#checkStatus").text("");
+        }
+        checkSubmit();
+    })
+    .change();
 });
 
 function setCheck(id, check, warningid, warning) {

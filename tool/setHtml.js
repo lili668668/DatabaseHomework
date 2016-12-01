@@ -105,7 +105,7 @@ function setAddBook_Bookstore(htmlFile, markid, belongBookstore, bookstoreId_arr
         }
     }
 
-    str += "</select>";
+    str += '</select><p class="check" id="checkBookstore"></p>';
 
     $(markid).append(str);
     var res = $.html();
