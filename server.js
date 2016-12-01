@@ -390,13 +390,22 @@ io.on('connection', function(socket){
         db_select.bookstore_get_allBook(msg, function(rows){
             var bookInfo = [];
             var price = [];
+            var authors = [];
             rows.forEach(function(element, index, array){
                 price.push(element["Price"]);
                 db_select.book_info(element["BookID"], function(bookrows){
                     bookInfo.push(bookrows[0]);
                 });
+
+                db_select.book_get_authors(element["BookID"], function(authorrows){
+                    var author = [];
+                    authorrows.forEach(function(element, index, array){
+                        author.push(element["name"]);
+                    });
+                    authors.push(author);
+                });
             });
-            var msg = {"bookInfo": bookInfo, "price": price};
+            var msg = {"bookInfo": bookInfo, "authors": authors};
             socket.emit("openBookRes", msg);
         });
     });

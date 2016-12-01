@@ -53,7 +53,8 @@ socket.on("openBookRes", function(msg){
         } else if (isNaN(parseInt(tmp))) {
             $("#bookSpeciesNum").text("請輸入正數");
         } else {
-
+            var str = 
+                `<div>`;
         }
     })
     .keyup();

@@ -91,7 +91,7 @@ function orderMan_info(account, callback) {
 
 function book_info(bookid, callback) {
 
-    var sql `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] where ${con.sBookId} = '${bookid}';`;
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] where ${con.sBookId} = '${bookid}';`;
     set(sql, function(rows){
         if (callback) {
             callback(rows);
@@ -222,7 +222,27 @@ function getBookPrice(bsid, bookid, callback) {
 
     set(sql, function(rows){
         if (callback) {
-            callback(rows[0][${con.sPrice}]);
+            callback(rows[0][con.sPrice]);
+        }
+    });
+}
+
+function book_get_authors(bookid, callback) {
+
+    var sql = `select ${con.sAuthorId}, ${con.sAuthorName} from [${con.sRoot}].[${con.sDbo}].[${con.sAuthorBook}] as ${sAuthorBook}, [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] as ${sAuthor} where ${sAuthorBook}.${con.sBookId} = ${bookid}; && ${sAuthorBook}.${sAuthorId} = ${sAuthor}.${sAuthorId};`;
+    set(sql, function(rows){
+        if (callback) {
+            callback(rows);
+        }
+    });
+}
+
+function author_get_name(authorid, callback) {
+
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] where ${con.sAuthorId} = authorid;`;
+    set(sql, function(rows){
+        if (callback) {
+            callback(rows);
         }
     });
 }
@@ -287,6 +307,8 @@ module.exports.orderMan_info = orderMan_info;
 module.exports.book_info = book_info;
 module.exports.orderMan_get_bookstore = orderMan_get_bookstore;
 module.exports.bookstore_get_allBook = bookstore_get_allBook;
+module.exports.book_get_authors = book_get_authors;
+module.exports.author_get_name = author_get_name;
 module.exports.book_exist = book_exist;
 module.exports.account_exist = account_exist;
 module.exports.bookstore_exist = book_exist;
