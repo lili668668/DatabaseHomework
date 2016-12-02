@@ -257,22 +257,15 @@ app.post('/add_bookstore_process', function(request, response) {
     }
 });
 
-app.get('/add_order', function(request, response) {
+app.get('/inquire_book', function(request, response){
     if (request.session.login) {
-        db_select.getAllBookstores(function(rows){
-            var values = [];
-            for (var cnt = 0;cnt < rows.length;cnt++) {
-                values.push(rows[cnt]["BSID"]);
-            }
-            var options = [];
-            for (var cnt = 0;cnt < rows.length;cnt++) {
-                options.push(rows[cnt]["BSName"]);
-            }
-            var sendstr = render.setDroplist(__dirname + "/html/add_order.html", "#bookstore", values, options);
-        });
+        response.sendFile(__dirname + '/html/inquire_book.html');
     } else {
-        response.redirect("/");
+        response.redirect('/');
     }
+});
+
+app.get('/add_order', function(request, response) {
 });
 
 app.post('/login_process', function(request, response){
@@ -369,7 +362,7 @@ io.on('connection', function(socket){
     });
 
     socket.on('checkBookExist', function(msg){
-        db_select.book_exist(msg['bsid'], msg['bookid'], function(flag) {
+        db_select.book_store_exist(msg['bsid'], msg['bookid'], function(flag) {
             socket.emit('checkBookRes', flag);
         });
     });
@@ -389,10 +382,8 @@ io.on('connection', function(socket){
     socket.on("openBook", function(msg){
         db_select.bookstore_get_allBook(msg, function(rows){
             var bookInfo = [];
-            var price = [];
             var authors = [];
             rows.forEach(function(element, index, array){
-                price.push(element["Price"]);
                 db_select.book_info(element["BookID"], function(bookrows){
                     bookInfo.push(bookrows[0]);
                 });

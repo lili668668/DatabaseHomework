@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+    <head>
+        <title>查詢書籍</title>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+        <link rel="stylesheet" href="css/inquire_book.css" type="text/css" media="all" />
+    </head>
+    <body>
+        <h1>查詢書籍</h1>
+        <p>查詢書店</p>
+        <select name="status" id="status">
+            <option value="none" selected>請選擇身分</option>
+        </select>
+        <p>查詢書籍</p>
+        <input type="text" id="book"></input>
+        <div id="info"></div>
+        <div id="shopping_car">
+            <p>已購物<span id="book_num">0</span>種書</p>
+            <button id="add_order">確認訂單</button>
+        </div>
+        <button id="inquire">查詢</button>
+        <form method="GET" action="/">
+            <button id="cancel" type="submit">回首頁</button>
+        </form>
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<script src="js/inquire_book.js"></script>
+    </body>
+</html>
