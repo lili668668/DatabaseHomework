@@ -37,7 +37,6 @@ function register_orderMan(account, password, name, ssid, email, type, ordermani
 
 function add_book(bookid, bookname, price, author, publisher, bsid) {
 
-    // TODO: 需要測試此功能
     db_select.book_exist(bookid, function(flag) {
         if (flag) {
             add_bookstore_book(bookid, bsid, price);

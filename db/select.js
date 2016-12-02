@@ -91,7 +91,7 @@ function orderMan_info(account, callback) {
 
 function book_info(bookid, callback) {
 
-    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] where ${con.sBookId} = '${bookid}';`;
+    var sql = `select ${con.sBook}.*, ${con.sBookStoreBook}.* from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}, [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] as ${con.sBookStoreBook} where ${con.sBookStoreBook}.${con.sBookId} = '${bookid}' and ${con.sBookStoreBook}.${con.sBookId} = ${con.sBook}.${con.sBookId};`;
     set(sql, function(rows){
         if (callback) {
             callback(rows);
@@ -123,11 +123,11 @@ function bookstore_get_allBook(bsid, callback) {
 
 function book_exist(bookid, callback) {
 
-    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBookId} = '${bookid}';`;
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] where ${con.sBookId} = '${bookid}';`;
 
     set(sql, function(rows) {
         if (callback) {
-            callback(rows != 0);
+            callback(rows.length != 0);
         }
     });
 }
@@ -153,7 +153,7 @@ function bookstore_exist(bsid, callback) {
     });
 }
 
-function book_exist(bsid, bookid, callback) {
+function book_store_exist(bsid, bookid, callback) {
 
     var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBSID} = '${bsid}' and ${con.sBookId} = '${bookid}';`;
 
@@ -182,7 +182,7 @@ function getAuthorId(callback) {
         if (callback) {
             var max = 1;
             rows.forEach(function(element, index, array) {
-                var no = element.substr(1, element.length - 1);
+                var no = element[con.sAuthorId].substr(1, element[con.sAuthorId].length - 1);
                 var num = parseInt(no, 10);
                 if (max < num) {
                     max = num;
@@ -229,7 +229,7 @@ function getBookPrice(bsid, bookid, callback) {
 
 function book_get_authors(bookid, callback) {
 
-    var sql = `select ${con.sAuthorId}, ${con.sAuthorName} from [${con.sRoot}].[${con.sDbo}].[${con.sAuthorBook}] as ${sAuthorBook}, [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] as ${sAuthor} where ${sAuthorBook}.${con.sBookId} = ${bookid}; && ${sAuthorBook}.${sAuthorId} = ${sAuthor}.${sAuthorId};`;
+    var sql = `select ${con.sAuthorBook}.${con.sAuthorId}, ${con.sAuthor}.${con.sAuthorName} from [${con.sRoot}].[${con.sDbo}].[${con.sAuthorBook}] as ${con.sAuthorBook}, [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] as ${con.sAuthor} where ${con.sAuthorBook}.${con.sBookId} = ${bookid} and ${con.sAuthorBook}.${con.sAuthorId} = ${con.sAuthor}.${con.sAuthorId};`;
     set(sql, function(rows){
         if (callback) {
             callback(rows);
@@ -249,7 +249,7 @@ function author_get_name(authorid, callback) {
 
 function getAllBookstores(callback) {
 
-    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}]`;
+    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}];`;
 
     set(sql, function(rows) {
         if (callback) {
@@ -310,8 +310,9 @@ module.exports.bookstore_get_allBook = bookstore_get_allBook;
 module.exports.book_get_authors = book_get_authors;
 module.exports.author_get_name = author_get_name;
 module.exports.book_exist = book_exist;
+module.exports.book_store_exist = book_store_exist;
 module.exports.account_exist = account_exist;
-module.exports.bookstore_exist = book_exist;
+module.exports.bookstore_exist = bookstore_exist;
 module.exports.getType = getType;
 module.exports.getAuthorId = getAuthorId;
 module.exports.getOrderNo = getOrderNo;

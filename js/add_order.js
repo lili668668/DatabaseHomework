@@ -43,18 +43,35 @@ function checkSubmit() {
     }
 }
 
+var all_book_info = [];
+
 socket.on("openBookRes", function(msg){
+    all_book_info = msg;
+
     var str = '<p>請問購買幾種書？</p><input name="bookSpeciesNum" id="bookSpeciesNum" type="number"><p id="checkBookSpeciesNum"></p>';
-    $("#books_info").append(str);
+    $("#books_info1").append(str);
     $("#bookSpeciesNum").keyup(function(){
         var tmp = $(this).val();
-        if (tmp < 1) {
+        var num = parseInt(tmp);
+        if (isNaN(num)) {
             $("#checkBookSpeciesNum").text("請輸入至少一本書");
-        } else if (isNaN(parseInt(tmp))) {
+        } else if (num < 1) {
             $("#bookSpeciesNum").text("請輸入正數");
         } else {
-            var str = 
-                `<div>`;
+            console.log()
+            /*for (var cnt = 0;cnt < num;cnt++) {
+                var str = 
+                    `<div class="book_info">
+                        <select name="book_option${cnt}" id="book_option${cnt}" class="book_option">
+                            <option value="none" selected>請選擇書籍</option>';
+                for (var cnt2 = 0;cnt2 < msg["bookInfo"].length;cnt2++) {
+                    var another = `<option value="${msg['bookInfo'][cnt2]['BookID']}">${msg['book_info'][cnt2]['BookId']}</option>`;
+                    str += another;
+                }
+                str += "</select></div>";
+                $("#books_info2").empty();
+                $("#books_info2").append(str);
+            }*/
         }
     })
     .keyup();
