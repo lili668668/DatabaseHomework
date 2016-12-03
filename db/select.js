@@ -99,6 +99,83 @@ function book_info(bookid, callback) {
     });
 }
 
+function bsid_booknames_inquire_book(bsid, booknames, callback) {
+    var sql = "";
+    booknames.forEach(function(element, index, array){
+        if (index != 0) {
+            sql += " union ";
+        }
+
+        var tmp = `
+            select ${con.sBook}.*, ${con.sBookStoreBook}.*, ${con.sBookStore}.*
+            from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] as ${con.sBookStoreBook}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] as ${con.sBookStore}
+            where ${con.sBookStoreBook}.${con.sBSID} = '${bsid}'
+            and ${con.sBookStoreBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+            and ${con.sBookStore}.${con.sBSID} = ${con.sBookStoreBook}.${con.sBSID}
+            and ${con.sBook}.${con.sBookName} = '%${element}%' `;
+
+        sql += tmp;
+    });
+    sql += ";";
+
+    set(sql, function(rows) {
+        console.log(rows);
+        if (callback) {
+            callback(rows);
+        }
+    });
+}
+
+function bsid_inquire_book(bsid, callback) {
+
+    var sql = `
+        select ${con.sBook}.*, ${con.sBookStoreBook}.*, ${con.sBookStore}.* 
+        from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}
+        , [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] as ${con.sBookStoreBook}
+        , [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] as ${con.sBookStore}
+        where ${con.sBookStoreBook}.${con.sBSID} = '${bsid}' 
+        and ${con.sBookStoreBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+        and ${con.sBookStore}.${con.sBSID} = ${con.sBookStoreBook}.${con.sBSID};`;
+
+    set(sql, function(rows) {
+        if (callback) {
+            callback(rows);
+        }
+    });
+
+}
+
+function booknames_inquire_book(booknames, callback) {
+    var sql = "";
+    booknames.forEach(function(element, index, array){
+        if (index != 0) {
+            sql += " union ";
+        }
+
+        var tmp = `
+            select ${con.sBook}.*, ${con.sBookStoreBook}.*, ${con.sBookStore}.*
+            from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] as ${con.sBookStoreBook}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] as ${con.sBookStore}
+            where ${con.sBookStoreBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+            and ${con.sBookStore}.${con.sBSID} = ${con.sBookStoreBook}.${con.sBSID}
+            and ${con.sBook}.${con.sBookName} = '%${element}%' `;
+
+        sql += tmp;
+    });
+    sql += ";";
+
+    set(sql, function(rows) {
+        console.log(rows);
+        if (callback) {
+            callback(rows);
+        }
+    });
+
+}
+
 function orderMan_get_bookstore(account, callback) {
 
     var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] where ${con.sAccount} = '${account}';`;
@@ -305,6 +382,9 @@ module.exports.ta_info = ta_info;
 module.exports.student_info = student_info;
 module.exports.orderMan_info = orderMan_info;
 module.exports.book_info = book_info;
+module.exports.bsid_booknames_inquire_book = bsid_booknames_inquire_book;
+module.exports.bsid_inquire_book = bsid_inquire_book;
+module.exports.booknames_inquire_book = booknames_inquire_book;
 module.exports.orderMan_get_bookstore = orderMan_get_bookstore;
 module.exports.bookstore_get_allBook = bookstore_get_allBook;
 module.exports.book_get_authors = book_get_authors;

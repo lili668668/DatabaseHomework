@@ -2,6 +2,7 @@ var config = require('./dbConfig.js');
 var con = require('./dbConst.js');
 var mssql = require('mssql');
 var db_select = require('./select.js');
+var tool = require('../tool/string_tool.js');
 
 function register_member(account, password, name, ssid, email, type, callback) {
 
@@ -60,7 +61,7 @@ function add_bookstore_book(bookid, bsid, price) {
 }
 
 function add_author(author, bookid) {
-    var authorlist = split(author, ",");
+    var authorlist = tool.split(author, ",");
 
     authorlist.forEach(function(authorName, index, array){
         db_select.verification_author(authorName, function(inAuthor, authorid){
@@ -161,16 +162,6 @@ function set(sqlstr, callback) {
         });
     });
 
-}
-
-function split(origin, spliter) {
-    var list = origin.split(spliter);
-    var newlist = [];
-    for (var cnt = 0;cnt < list.length;cnt++) {
-        newlist.push(list[cnt].trim());
-    }
-
-    return newlist;
 }
 
 module.exports.register_professor = register_professor;

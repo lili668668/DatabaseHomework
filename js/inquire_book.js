@@ -1,116 +1,54 @@
 var socket = io();
 $(function(){
-    $("#account").keyup(function(){
-        if ($(this).val().length < 1) {
-            $("#checkId").text("請輸入帳號");
-        } else {
-            socket.emit("checkAccountExist", $(this).val());
-        }
-    })
-    .keyup();
-    
-    setCheck("#password", function(){
-        return $("#password").val().length < 4;
-    }, "#checkPassword", "密碼至少四碼");
-    
-    setCheck("#againPassword", function(){
-        return $("#againPassword").val() != $("#password").val();
-    }, "#checkAgainPassword", "與密碼不合");
-    
-    setCheck("#name", function(){
-        return $("#name").val().length < 1;
-    }, "#checkName", "請輸入名字");
-    
-    setCheck("#ssid", function(){
-        var re = new RegExp("^[A-Z]\\d{9}");
-        return !re.test($("#ssid").val());
-    }, "#checkSsid", "身分證字號格式不對");
-    
-    setCheck("#email", function(){
-        var re = new RegExp("^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z]+$");
-        return !re.test($("#email").val());
-    }, "#checkEmail", "Email格式不合");
-
-
-    $("#status").change(function() {
-        if ( $( this ).val() == "none" ) {
-            $("#checkStatus").text("請選擇一個身分");
-            $("#other").empty();
-        } else {
-            $("#checkStatus").text("");
-            socket.emit("status", $( this ).val());
-        }
-        checkSubmit();
-    })
-    .change();
-
+    $("#inquire").click(function() {
+        var bsid = $("#bookstore").val();
+        var bookname = $("#book").val();
+        var msg = {"bsid": bsid, "bookname": bookname};
+        socket.emit("inquire_book", msg);
+    });
 });
 
-function setCheck(id, check, warningid, warning) {
-    $(id).keyup(function(){
-        var bool = check();
-        if (bool) {
-            $(warningid).text(warning);
-        } else {
-            $(warningid).text("");
-        }
-
-        checkSubmit();
-    })
-    .keyup();
-
-}
-
-function checkSubmit() {
-    let flag = true;
-    $(".check").each(function(){
-        if ( $( this ).text() != "" ) {
-            flag = false;
-            return;
-        }
-        return;
-    });
-    if (flag) {
-        $("#submit").prop("disabled", false);
+socket.on("re_inquire_book", function(msg){
+    $("#info").empty();
+    if (msg.length == 0) {
+        $("#info").append("<p>查無此資料</p>");
     } else {
-        $("#submit").prop("disabled", true);
-    }
-}
+        msg.forEach(function(element, index, array){
+            var info = 
+                `
+                <div>
+                    <p>書號:</p><span id="bookid">${element["BookID"][0]}</span>
+                    <p>書名:${element["BookName"]}</p>
+                    <p>出版商:${element["Publisher"]}</p>
+                    <p>書店號:</p><span id="bsid">${element["BSID"][0]}</span>
+                    <p>書店:${element["BSName"]}</p>
+                    <p>價格:${element["Price"]}</p>
+                    <span>訂購數量:</span><input type="number" id="count"></input>
+                    <button class="add_shopping_car">下單</button>
+                </div>
+                `;
+            $("#info").append(info);
+        });
+        $(".add_shopping_car").click(function(){
+            var newbsid = $(this).siblings("#bsid").text()
+            var newbookid = $(this).siblings("#bookid").text();
+            var newcount = parseInt($(this).siblings("#count").val());
 
-socket.on("re_status", function(msg){
-    $("#other").empty();
-    var other = msg["other"];
-    var other_name = msg["other_name"];
-    for (var cnt = 0;cnt < other.length;cnt++) {
-        var str1 = `<p>${other_name[cnt]}</p>`;
-        var str2 = `<input type="text" class="other" id="${other[cnt]}" name="${other[cnt]}">`;
-        var str3 = `<p class="check" id="check_${other[cnt]}"></p>`
-        $("#other").append(str1);
-        $("#other").append(str2);
-        $("#other").append(str3);
-    }
+            if (!isNaN(newcount) && newcount > 0) {
 
-    $(".other").each(function(){
-        $( this ).keyup(function(){
-            var bool = $( this ).val().length < 1;
-            var warningid = "#check_" + $( this ).attr("id");
-            if ( bool ) {
-                $(warningid).text("請勿留白");
-            } else {
-                $(warningid).text("");
+                var newmsg = {"bsid": newbsid, "bookid": newbookid, "count": newcount};
+                var request = $.ajax({
+                    url: "/add_shopping_car",
+                    method: "GET",
+                    data: newmsg,
+                    dataType: "text"
+                });
+                request.done(function(res){
+                    console.log(res);
+                    $("#book_num").text(res);
+                });
             }
 
-            checkSubmit();
-        })
-        .keyup();
-    });
-
-});
-
-socket.on("checkAccountRes", function(msg){
-    if (msg) {
-        $("#checkAccount").text("已有此帳號");
-    } else {
-        $("#checkAccount").text("");
+        });
     }
 });

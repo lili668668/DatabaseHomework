@@ -5,7 +5,9 @@ var cookie_session = require('cookie-session');
 var bodyparser = require('body-parser');
 var cc = require('config-multipaas');
 var fs = require('fs');
+
 var render = require('./tool/setHtml.js');
+var tool = require('./tool/string_tool.js');
 var db_insert = require('./db/insert.js');
 var db_select = require('./db/select.js');
 var db_update = require('./db/update.js');
@@ -259,7 +261,18 @@ app.post('/add_bookstore_process', function(request, response) {
 
 app.get('/inquire_book', function(request, response){
     if (request.session.login) {
-        response.sendFile(__dirname + '/html/inquire_book.html');
+        db_select.getAllBookstores(function(rows){
+            var bsid = [];
+            rows.forEach(function(element, index, array) {
+                bsid.push(element["BSID"]);
+            });
+            var bsname = [];
+            rows.forEach(function(element, index, array) {
+                bsname.push(element["BSName"]);
+            });
+            var sendstr = render.setDroplist(__dirname + '/html/inquire_book.html', '#bookstore', bsid, bsname);
+            response.send(sendstr);
+        });
     } else {
         response.redirect('/');
     }
@@ -288,6 +301,9 @@ app.get('/logout', function(request, response){
     request.session.login = undefined;
     request.session.type = undefined;
     request.session.logfail = undefined;
+    request.session.bsids = undefined;
+    request.session.bookids = undefined;
+    request.session.counts = undefined;
     response.redirect("/");
 });
 
@@ -329,6 +345,40 @@ app.post('/update_member_process', function(request, response){
 
     response.redirect("/");
 
+});
+
+app.get('/add_shopping_car', function(request, response){
+    var session = request.session;
+    if (session.login) {
+        if (!session.bsids) {
+            session.bsids = [];
+        }
+        if (!session.bookids) {
+            session.bookids = [];
+        }
+        if (!session.counts) {
+            session.counts = [];
+        }
+
+        var index = session.bookids.indexOf(request.query["bookid"]);
+        if (index < 0) {
+            session.bsids.push(request.query["bsid"]);
+            session.bookids.push(request.query["bookid"]);
+            session.counts.push(parseInt(request.query["count"]));
+        } else {
+            session.bsids.push(request.query["bsid"]);
+            session.counts[index] = session.counts[index] + parseInt(request.query["count"]);
+        }
+
+        response.format({
+            text: function() {
+                response.send(request.session.bookids.length + "");
+            }
+        });
+        response.end();
+    } else {
+        response.redirect('/');
+    }
 });
 
 io.on('connection', function(socket){
@@ -379,6 +429,31 @@ io.on('connection', function(socket){
         });
     });
 
+    socket.on("inquire_book", function(msg){
+        var bsid = msg["bsid"];
+        var bookname = msg["bookname"];
+        var booknames = tool.split(bookname, " ");
+
+        var bsid_exist = (bsid != "none");
+        var booknames_exist = (booknames[0] != "");
+
+        if (bsid_exist && booknames_exist) {
+            db_select.bsid_booknames_inquire_book(bsid, booknames, function(rows){
+                socket.emit("re_inquire_book", rows);
+            });
+        } else if (bsid_exist) {
+            db_select.bsid_inquire_book(bsid, function(rows){
+                socket.emit("re_inquire_book", rows);
+            });
+        } else if (booknames_exist) {
+            db_select.booknames_inquire_book(booknames, function(rows){
+                socket.emit("re_inquire_book", rows);
+            });
+        } else {
+            socket.emit("re_inquire_book", []);
+        }
+    });
+
     socket.on("openBook", function(msg){
         db_select.bookstore_get_allBook(msg, function(rows){
             var bookInfo = [];
@@ -404,7 +479,7 @@ io.on('connection', function(socket){
 
 });
 
-server.listen("8000", config.get('IP'), function () {
-    console.log( "Listening on " + config.get('IP') + ", port " + "8000");
+server.listen("8080", config.get('IP'), function () {
+    console.log( "Listening on " + config.get('IP') + ", port " + "8080");
 });
 
