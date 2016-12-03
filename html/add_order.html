@@ -8,14 +8,11 @@
     <body>
         <h1>新增訂單</h1>
         <form method="POST" action="/add_order_process" id="form">
-            <p>訂單編號 <span name="id" id="id"></span></p>
-            <p>書店</p>
-            <select name="bookstore" id="bookstore">
-                <option value="none" selected>請選擇書店</option>
-            </select>
-            <div id="books_info1"></div>
-            <div id="books_info2"></div>
-            <button id="submit" type="submit" disabled>提交</button>
+            <table id="table" border="1"></table>
+            <button id="submit" type="submit">提交</button>
+        </form>
+        <form method="GET" action="/inquire_book" id="form">
+            <button id="submit" type="submit">回去購物</button>
         </form>
         <form method="GET" action="/">
             <button id="cancel" type="submit">取消</button>

@@ -30,7 +30,11 @@ function verification_author(authorName, callback) {
             }
         });
         if (callback) {
-            callback(flag, rows[cnt]["AuthorID"]);
+            if (rows[cnt]) {
+                callback(flag, rows[cnt]["AuthorID"]);
+            } else {
+                callback(flag, undefined);
+            }
         }
 
     });
@@ -89,10 +93,33 @@ function orderMan_info(account, callback) {
     });
 }
 
-function book_info(bookid, callback) {
+function books_info(bsids, bookids, callback) {
+    var sql = "";
+    bookids.forEach(function(element, index, array){
+        if (index != 0) {
+            sql += " union ";
+        }
 
-    var sql = `select ${con.sBook}.*, ${con.sBookStoreBook}.* from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}, [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] as ${con.sBookStoreBook} where ${con.sBookStoreBook}.${con.sBookId} = '${bookid}' and ${con.sBookStoreBook}.${con.sBookId} = ${con.sBook}.${con.sBookId};`;
-    set(sql, function(rows){
+        var tmp = `
+            select ${con.sBook}.*, ${con.sBookStoreBook}.*, ${con.sBookStore}.*, ${con.sAuthor}.*
+            from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] as ${con.sBookStoreBook}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] as ${con.sBookStore}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] as ${con.sAuthor}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sAuthorBook}] as ${con.sAuthorBook}
+            where ${con.sBookStoreBook}.${con.sBSID} = '${bsids[index]}'
+            and ${con.sBookStoreBook}.${con.sBookId} like '${element}'
+            and ${con.sBookStoreBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+            and ${con.sAuthorBook}.${con.sAuthorId} = ${con.sAuthor}.${con.sAuthorId}
+            and ${con.sAuthorBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+            and ${con.sBookStore}.${con.sBSID} = ${con.sBookStoreBook}.${con.sBSID} `;
+
+        sql += tmp;
+    });
+    var foot = `order by ${con.sBookStoreBook}.${con.sBookId}, ${con.sBookStoreBook}.${con.sBSID};`;
+    sql += foot;
+
+    set(sql, function(rows) {
         if (callback) {
             callback(rows);
         }
@@ -107,18 +134,23 @@ function bsid_booknames_inquire_book(bsid, booknames, callback) {
         }
 
         var tmp = `
-            select ${con.sBook}.*, ${con.sBookStoreBook}.*, ${con.sBookStore}.*
+            select ${con.sBook}.*, ${con.sBookStoreBook}.*, ${con.sBookStore}.*, ${con.sAuthor}.*
             from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}
             , [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] as ${con.sBookStoreBook}
             , [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] as ${con.sBookStore}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] as ${con.sAuthor}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sAuthorBook}] as ${con.sAuthorBook}
             where ${con.sBookStoreBook}.${con.sBSID} = '${bsid}'
             and ${con.sBookStoreBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+            and ${con.sAuthorBook}.${con.sAuthorId} = ${con.sAuthor}.${con.sAuthorId}
+            and ${con.sAuthorBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
             and ${con.sBookStore}.${con.sBSID} = ${con.sBookStoreBook}.${con.sBSID}
             and ${con.sBook}.${con.sBookName} like '%${element}%' `;
 
         sql += tmp;
     });
-    sql += ";";
+    var foot = `order by ${con.sBookStoreBook}.${con.sBookId}, ${con.sBookStoreBook}.${con.sBSID};`;
+    sql += foot;
 
     set(sql, function(rows) {
         if (callback) {
@@ -130,13 +162,18 @@ function bsid_booknames_inquire_book(bsid, booknames, callback) {
 function bsid_inquire_book(bsid, callback) {
 
     var sql = `
-        select ${con.sBook}.*, ${con.sBookStoreBook}.*, ${con.sBookStore}.* 
+        select ${con.sBook}.*, ${con.sBookStoreBook}.*, ${con.sBookStore}.*, ${con.sAuthor}.*
         from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}
         , [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] as ${con.sBookStoreBook}
         , [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] as ${con.sBookStore}
+        , [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] as ${con.sAuthor}
+        , [${con.sRoot}].[${con.sDbo}].[${con.sAuthorBook}] as ${con.sAuthorBook}
         where ${con.sBookStoreBook}.${con.sBSID} = '${bsid}' 
         and ${con.sBookStoreBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
-        and ${con.sBookStore}.${con.sBSID} = ${con.sBookStoreBook}.${con.sBSID};`;
+        and ${con.sAuthorBook}.${con.sAuthorId} = ${con.sAuthor}.${con.sAuthorId}
+        and ${con.sAuthorBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+        and ${con.sBookStore}.${con.sBSID} = ${con.sBookStoreBook}.${con.sBSID}
+        order by ${con.sBookStoreBook}.${con.sBookId}, ${con.sBookStoreBook}.${con.sBSID};`;
 
     set(sql, function(rows) {
         if (callback) {
@@ -154,24 +191,28 @@ function booknames_inquire_book(booknames, callback) {
         }
 
         var tmp = `
-            select ${con.sBook}.*, ${con.sBookStoreBook}.*, ${con.sBookStore}.*
+            select ${con.sBook}.*, ${con.sBookStoreBook}.*, ${con.sBookStore}.*, ${con.sAuthor}.*
             from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}
             , [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] as ${con.sBookStoreBook}
             , [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] as ${con.sBookStore}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] as ${con.sAuthor}
+            , [${con.sRoot}].[${con.sDbo}].[${con.sAuthorBook}] as ${con.sAuthorBook}
             where ${con.sBookStoreBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+            and ${con.sAuthorBook}.${con.sAuthorId} = ${con.sAuthor}.${con.sAuthorId}
+            and ${con.sAuthorBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
             and ${con.sBookStore}.${con.sBSID} = ${con.sBookStoreBook}.${con.sBSID}
             and ${con.sBook}.${con.sBookName} like '%${element}%' `;
 
         sql += tmp;
     });
-    sql += ";";
+    var foot = `order by ${con.sBookStoreBook}.${con.sBookId}, ${con.sBookStoreBook}.${con.sBSID};`;
+    sql += foot;
 
     set(sql, function(rows) {
         if (callback) {
             callback(rows);
         }
     });
-
 }
 
 function orderMan_get_bookstore(account, callback) {
@@ -304,7 +345,7 @@ function getBookPrice(bsid, bookid, callback) {
 
 function book_get_authors(bookid, callback) {
 
-    var sql = `select ${con.sAuthorBook}.${con.sAuthorId}, ${con.sAuthor}.${con.sAuthorName} from [${con.sRoot}].[${con.sDbo}].[${con.sAuthorBook}] as ${con.sAuthorBook}, [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] as ${con.sAuthor} where ${con.sAuthorBook}.${con.sBookId} = ${bookid} and ${con.sAuthorBook}.${con.sAuthorId} = ${con.sAuthor}.${con.sAuthorId};`;
+    var sql = `select ${con.sAuthor}.* from [${con.sRoot}].[${con.sDbo}].[${con.sAuthorBook}] as ${con.sAuthorBook}, [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] as ${con.sAuthor} where ${con.sAuthorBook}.${con.sBookId} = '${bookid}' and ${con.sAuthorBook}.${con.sAuthorId} = ${con.sAuthor}.${con.sAuthorId};`;
     set(sql, function(rows){
         if (callback) {
             callback(rows);
@@ -379,7 +420,7 @@ module.exports.professor_info = professor_info;
 module.exports.ta_info = ta_info;
 module.exports.student_info = student_info;
 module.exports.orderMan_info = orderMan_info;
-module.exports.book_info = book_info;
+module.exports.books_info = books_info;
 module.exports.bsid_booknames_inquire_book = bsid_booknames_inquire_book;
 module.exports.bsid_inquire_book = bsid_inquire_book;
 module.exports.booknames_inquire_book = booknames_inquire_book;

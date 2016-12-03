@@ -99,25 +99,18 @@ function add_bookstore(bsid, bsname, city, bsphone, account) {
     set(sql);
 }
 
-function add_order(orderno, account, bsid, bookid_array, bookcount_array) {
-    var total_price = 0;
-    bookid_array.forEach(function(element, index, array){
-        db_select.getBookPrice(bsid, element, function(price){
-            total_price += bookcount_array[index] * parseInt(price);
-        });
-    });
-
+function add_order(orderno, account, bsid_array, bookid_array, bookcount_array, total_price) {
     var sql = `insert into ${con.sOrder}(${con.sOrderNo}, ${con.sOrderTime}, ${con.sAccount}, ${con.sTotalPrice}) values('${orderno}', SYSDATETIME(), '${account}', '${total_price}');`;
 
     set(sql, function(){
-        add_order_book(orderno, bsid, bookid_array, bookcount_array);
+        add_order_book(orderno, bsid_array, bookid_array, bookcount_array);
     });
 }
 
-function add_order_book(orderno, bsid, bookid_array, bookcount_array) {
+function add_order_book(orderno, bsid_array, bookid_array, bookcount_array) {
     bookid_array.forEach(function(element, index, array){
 
-        var sql = `insert into ${con.sOrderBook}(${con.sOrderNo}, ${con.sBSID}, ${con.sBookId}, ${con.sBookCount}) values('${orderno}', '${bsid}', '${element}', '${bookcount_array[index]}');`;
+        var sql = `insert into ${con.sOrderBook}(${con.sOrderNo}, ${con.sBSID}, ${con.sBookId}, ${con.sBookCount}) values('${orderno}', '${bsid_array[index]}', '${element}', '${bookcount_array[index]}');`;
 
         set(sql);
     });

@@ -271,6 +271,11 @@ app.get('/inquire_book', function(request, response){
                 bsname.push(element["BSName"]);
             });
             var sendstr = render.setDroplist(__dirname + '/html/inquire_book.html', '#bookstore', bsid, bsname);
+            if (request.session.bookids) {
+                sendstr = render.setHTMLText(sendstr, "#book_num", request.session.bookids.length);
+            } else {
+                sendstr = render.setHTMLText(sendstr, "#book_num", 0);
+            }
             response.send(sendstr);
         });
     } else {
@@ -279,6 +284,22 @@ app.get('/inquire_book', function(request, response){
 });
 
 app.get('/add_order', function(request, response) {
+    if (request.session.login) {
+        var bsids = request.session.bsids;
+        var bookids = request.session.bookids;
+        var counts = request.session.counts;
+        if (bsids && bookids) {
+            db_select.books_info(bsids, bookids, function(rows){
+                var sendstr = render.setShopcarTable(__dirname + '/html/add_order.html', "#table", rows, bsids, bookids, counts);
+                response.send(sendstr);
+            });
+        } else {
+            var sendstr = render.setText(__dirname + '/html/add_order.html', '#table', "沒有商品資料");
+            response.send(sendstr);
+        }
+    } else {
+        response.redirect('/');
+    }
 });
 
 app.post('/login_process', function(request, response){
@@ -360,7 +381,7 @@ app.get('/add_shopping_car', function(request, response){
             session.counts = [];
         }
 
-        var index = session.bookids.indexOf(request.query["bookid"]);
+        var index = render.shopcar_findcountindex(session.bsids, session.bookids, request.query["bsid"], request.query["bookid"]);
         if (index < 0) {
             session.bsids.push(request.query["bsid"]);
             session.bookids.push(request.query["bookid"]);
@@ -454,32 +475,11 @@ io.on('connection', function(socket){
         }
     });
 
-    socket.on("openBook", function(msg){
-        db_select.bookstore_get_allBook(msg, function(rows){
-            var bookInfo = [];
-            var authors = [];
-            rows.forEach(function(element, index, array){
-                db_select.book_info(element["BookID"], function(bookrows){
-                    bookInfo.push(bookrows[0]);
-                });
-
-                db_select.book_get_authors(element["BookID"], function(authorrows){
-                    var author = [];
-                    authorrows.forEach(function(element, index, array){
-                        author.push(element["name"]);
-                    });
-                    authors.push(author);
-                });
-            });
-            var msg = {"bookInfo": bookInfo, "authors": authors};
-            socket.emit("openBookRes", msg);
-        });
-    });
     //io.emit('info', name + "上線，目前線上" + people_counter + "人");
 
 });
 
-server.listen("8080", config.get('IP'), function () {
-    console.log( "Listening on " + config.get('IP') + ", port " + "8080");
+server.listen("8800", config.get('IP'), function () {
+    console.log( "Listening on " + config.get('IP') + ", port " + "8800");
 });
 

@@ -14,14 +14,16 @@
         <p>查詢書籍</p>
         <input type="text" id="book"></input>
         <div id="shopping_car">
-            <p>已購物<span id="book_num">0</span>種書</p>
-            <button id="add_order">確認訂單</button>
+            <p>已購物<span id="book_num"></span>種書</p>
+            <form method="GET" action="/add_order">
+                <button id="add_order">確認訂單</button>
+            </form>
         </div>
         <button id="inquire">查詢</button>
         <form method="GET" action="/">
             <button id="cancel" type="submit">回首頁</button>
         </form>
-        <div id="info"></div>
+        <table id="info" border="1"></table>
         <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
         <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 		<script src="js/inquire_book.js"></script>

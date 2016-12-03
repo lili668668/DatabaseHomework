@@ -24,6 +24,13 @@ function setText(htmlFile, markid, text) {
     return res;
 }
 
+function setHTMLText(html, markid, text) {
+    var $ = cheerio.load(html);
+    $(markid).text(text);
+    var res = $.html();
+    return res;
+}
+
 function setTexts(htmlFile, markid, titles, texts) {
     var html = fs.readFileSync(htmlFile);
     var $ = cheerio.load(html);
@@ -34,6 +41,144 @@ function setTexts(htmlFile, markid, titles, texts) {
     $(markid).append(str);
     var res = $.html();
     return res;
+}
+
+function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
+    var html = fs.readFileSync(htmlFile);
+    var $ = cheerio.load(html);
+
+    if (rows.length == 0) {
+        $(markid).append("<p>無商品資料</p>");
+    } else {
+        var header = 
+            `
+                <tr>
+                    <th>書號</th>
+                    <th>書名</th>
+                    <th>作者</th>
+                    <th>出版商</th>
+                    <th>書店號</th>
+                    <th>書店</th>
+                    <th>價格</th>
+                    <th>訂購數量</th>
+                    <th>訂購價格</th>
+                    <th>刪除</th>
+                </tr>
+            `;
+        $(markid).append(header);
+        var presame = false;
+        var len = rows.length;
+        var body = "";
+        var all_price = 0;
+        rows.forEach(function(element, index, array){
+            var last =  index == len - 1;
+            var nextsame = false;
+            if (!last) {
+                nextsame = (element["BookID"][0] == array[index + 1]["BookID"][0] && 
+                        element["BSID"][0] == array[index + 1]["BSID"][0]);
+            }
+            var countindex = shopcar_findcountindex(bsids, bookids, element["BSID"][0], element["BookID"][0]);
+            var count = counts[countindex];
+            var line_price = parseInt(element["Price"]) * count;
+            all_price += line_price;
+
+            if (!presame && last) {
+                var info = 
+                    `
+                    <tr>
+                        <td id="bookid">${element["BookID"][0]}</td>
+                        <td>${element["BookName"]}</td>
+                        <td>${element["Name"]}</td>
+                        <td>${element["Publisher"]}</td>
+                        <td id="bsid">${element["BSID"][0]}</td>
+                        <td>${element["BSName"]}</td>
+                        <td>${element["Price"]}</td>
+                        <td id="c"><input type="number" id="count" value="${count}"></input></td>
+                        <td>${line_price}</td>
+                        <td class="parent"><button class="delete">刪除</button></td>
+                    </tr>
+                    `;
+                body += info;
+
+            } else if (presame && last) {
+                var info = 
+                    `
+                        , ${element["Name"]}</td>
+                        <td>${element["Publisher"]}</td>
+                        <td id="bsid">${element["BSID"][0]}</td>
+                        <td>${element["BSName"]}</td>
+                        <td>${element["Price"]}</td>
+                        <td id="c"><input type="number" id="count" value="${count}"></input></td>
+                        <td>${line_price}</td>
+                        <td class="parent"><button class="delete">刪除</button></td>
+                    </tr>
+                    `;
+                body += info;
+
+            } else if (!presame && !nextsame) {
+                var info = 
+                    `
+                    <tr>
+                        <td id="bookid">${element["BookID"][0]}</td>
+                        <td>${element["BookName"]}</td>
+                        <td>${element["Name"]}</td>
+                        <td>${element["Publisher"]}</td>
+                        <td id="bsid">${element["BSID"][0]}</td>
+                        <td>${element["BSName"]}</td>
+                        <td>${element["Price"]}</td>
+                        <td id="c"><input type="number" id="count" value="${count}"></input></td>
+                        <td>${line_price}</td>
+                        <td class="parent"><button class="delete">刪除</button></td>
+                    </tr>
+                    `;
+                body += info;
+                presame = false;
+                
+            } else if (!presame && nextsame) {
+                var info = 
+                    `
+                    <tr>
+                        <td id="bookid">${element["BookID"][0]}</td>
+                        <td>${element["BookName"]}</td>
+                        <td>${element["Name"]}
+                    `;
+                body += info;
+                presame = true;
+            } else if (presame && !nextsame) {
+                var info = 
+                    `
+                        , ${element["Name"]}</td>
+                        <td>${element["Publisher"]}</td>
+                        <td id="bsid">${element["BSID"][0]}</td>
+                        <td>${element["BSName"]}</td>
+                        <td>${element["Price"]}</td>
+                        <td id="c"><input type="number" id="count" value="${count}"></input></td>
+                        <td>${line_price}</td>
+                        <td class="parent"><button class="delete">刪除</button></td>
+                    `;
+                body += info;
+                presame = false;
+
+            } else if (presame && nextsame) {
+                var info = ", " + element["Name"];
+                body += info;
+                presame = true;
+            }
+
+        });
+    }
+    $(markid).append(body);
+    return $.html();
+}
+
+function shopcar_findcountindex(bsids, bookids, bsid, bookid) {
+    var flag = -1;
+    bsids.forEach(function(element, index, array){
+        if (element == bsid && bookids[index] == bookid) {
+            flag = index;
+        }
+    });
+    return flag;
 }
 
 function setButton(htmlFile, markid, formmethed, formaction, buttonname) {
@@ -116,8 +261,11 @@ function setAddBook_Bookstore(htmlFile, markid, belongBookstore, bookstoreId_arr
 module.exports.setDroplist = setDroplist;
 module.exports.setText = setText;
 module.exports.setTexts = setTexts;
+module.exports.setShopcarTable = setShopcarTable;
 module.exports.setButton = setButton;
 module.exports.setStatusItem = setStatusItem;
 module.exports.setHTMLButton = setHTMLButton;
+module.exports.setHTMLText = setHTMLText;
 module.exports.fillBlank = fillBlank;
 module.exports.setAddBook_Bookstore = setAddBook_Bookstore;
+module.exports.shopcar_findcountindex = shopcar_findcountindex;
