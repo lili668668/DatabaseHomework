@@ -114,14 +114,13 @@ function bsid_booknames_inquire_book(bsid, booknames, callback) {
             where ${con.sBookStoreBook}.${con.sBSID} = '${bsid}'
             and ${con.sBookStoreBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
             and ${con.sBookStore}.${con.sBSID} = ${con.sBookStoreBook}.${con.sBSID}
-            and ${con.sBook}.${con.sBookName} = '%${element}%' `;
+            and ${con.sBook}.${con.sBookName} like '%${element}%' `;
 
         sql += tmp;
     });
     sql += ";";
 
     set(sql, function(rows) {
-        console.log(rows);
         if (callback) {
             callback(rows);
         }
@@ -161,14 +160,13 @@ function booknames_inquire_book(booknames, callback) {
             , [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] as ${con.sBookStore}
             where ${con.sBookStoreBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
             and ${con.sBookStore}.${con.sBSID} = ${con.sBookStoreBook}.${con.sBSID}
-            and ${con.sBook}.${con.sBookName} = '%${element}%' `;
+            and ${con.sBook}.${con.sBookName} like '%${element}%' `;
 
         sql += tmp;
     });
     sql += ";";
 
     set(sql, function(rows) {
-        console.log(rows);
         if (callback) {
             callback(rows);
         }
