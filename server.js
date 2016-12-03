@@ -311,7 +311,7 @@ app.get('/add_order_process', function(request, response) {
             var all_price = 0;
             rows.forEach(function(element, index, array) {
                 var countindex = render.shopcar_findcountindex(bsids, bookids, element["BSID"][0], element["BookID"][0]);
-                var count = counts[countindexa];
+                var count = counts[countindex];
                 all_price += parseInt(element["Price"]) * count;
             });
             db_select.getOrderNo(function(id){
@@ -329,7 +329,7 @@ app.get('/add_order_cancel', function(request, response) {
     request.session.bsids = undefined;
     request.session.bookids = undefined;
     request.session.counts = undefined;
-    response.redirect('/inquire_book.html');
+    response.redirect('/inquire_book');
 });
 
 app.post('/login_process', function(request, response){

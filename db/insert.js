@@ -100,7 +100,8 @@ function add_bookstore(bsid, bsname, city, bsphone, account) {
 }
 
 function add_order(orderno, account, bsid_array, bookid_array, bookcount_array, total_price) {
-    var sql = `insert into ${con.sOrder}(${con.sOrderNo}, ${con.sOrderTime}, ${con.sAccount}, ${con.sTotalPrice}) values('${orderno}', SYSDATETIME(), '${account}', '${total_price}');`;
+
+    var sql = `insert into [${con.sRoot}].[${con.sDbo}].[${con.sOrder}](${con.sOrderNo}, ${con.sOrderTime}, ${con.sAccount}, ${con.sTotalPrice}) values('${orderno}', SYSDATETIME(), '${account}', '${total_price}');`;
 
     set(sql, function(){
         add_order_book(orderno, bsid_array, bookid_array, bookcount_array);

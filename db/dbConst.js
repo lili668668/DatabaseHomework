@@ -88,6 +88,8 @@ module.exports = {
     sAuthorBook: sAuthorBook,
     sBookStore: sBookStore,
     sBookStoreBook: sBookStoreBook,
+    sOrder: sOrder,
+    sOrderBook: sOrderBook,
 
     // memeber
     sAccount: sAccount,
@@ -129,6 +131,14 @@ module.exports = {
 
     // AUTHOR
     sAuthorId: sAuthorId,
-    sAuthorName: sAuthorName
+    sAuthorName: sAuthorName,
+
+    // ORDER
+    sOrderNo: sOrderNo,
+    sOrderTime: sOrderTime,
+    sTotalPrice: sTotalPrice,
+
+    // ORDER_BOOK_RECORD
+    sBookCount: sBookCount
 
 }
