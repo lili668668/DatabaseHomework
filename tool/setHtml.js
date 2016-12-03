@@ -167,6 +167,8 @@ function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
 
         });
     }
+    var aprice = `<div>總價格: ${all_price}</div>`;
+    body += aprice;
     $(markid).append(body);
     return $.html();
 }

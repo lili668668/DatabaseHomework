@@ -302,6 +302,36 @@ app.get('/add_order', function(request, response) {
     }
 });
 
+app.get('/add_order_process', function(request, response) {
+    if (request.session.login) {
+        var bsids = request.session.bsids;
+        var bookids = request.session.bookids;
+        var counts = request.session.counts;
+        db_select.books_info(bsids, bookids, function(rows){
+            var all_price = 0;
+            rows.forEach(function(element, index, array) {
+                var countindex = render.shopcar_findcountindex(bsids, bookids, element["BSID"][0], element["BookID"][0]);
+                var count = counts[countindexa];
+                all_price += parseInt(element["Price"]) * count;
+            });
+            db_select.getOrderNo(function(id){
+                var no = "B" + id;
+                db_insert.add_order(no, request.session.login, bsids, bookids, counts, all_price);
+                response.redirect('/add_order_cancel');
+            });
+        });
+    } else {
+        response.redirect('/');
+    }
+});
+
+app.get('/add_order_cancel', function(request, response) {
+    request.session.bsids = undefined;
+    request.session.bookids = undefined;
+    request.session.counts = undefined;
+    response.redirect('/inquire_book.html');
+});
+
 app.post('/login_process', function(request, response){
     var row = request.body;
     db_select.verification_account(row.account, row.password, function(bool){
