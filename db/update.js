@@ -2,6 +2,8 @@ var config = require('./dbConfig.js');
 var con = require('./dbConst.js');
 var mssql = require('mssql');
 var db_select = require('./select.js');
+var db_insert = require('./insert.js');
+var db_delete = require('./delete.js');
 
 function update_member(account, name, ssid, email, callback) {
 
@@ -37,6 +39,22 @@ function update_orderMan(account, name, ssid, email, ordermanid) {
 
     var sql = `update ${con.sOrderMan} set ${con.sOrderManid}='${ordermanid}' where ${con.sAccount}='${account}'`;
     update_member(account, name, ssid, email, function(){set(sql);});
+}
+
+function update_order(orderno, account, bsids, bookids, counts, allprice) {
+
+    var sql = `update [${con.sRoot}].[${con.sDbo}].[${con.sOrder}] set ${con.sOrderTime} = SYSDATETIME(), ${con.sTotalPrice} = '${allprice}' where ${con.sOrderNo} = '${orderno}' and ${con.sAccount} = '${account}';`;
+
+    set(sql, function() {
+        update_order_book(orderno, bsids, bookids, counts);
+    });
+
+}
+
+function update_order_book(orderno, bsids, bookids, counts) {
+    db_delete.empty_books_from_order(orderno, function(){
+        db_insert.add_order_book(orderno, bsids, bookids, counts);
+    });
 }
 
 function add_book(bookid, bookname, price, author, publisher) {
@@ -111,4 +129,4 @@ module.exports.update_professor = update_professor;
 module.exports.update_ta = update_ta;
 module.exports.update_student = update_student;
 module.exports.update_orderMan = update_orderMan;
-module.exports.add_book = add_book;
+module.exports.update_order = update_order;

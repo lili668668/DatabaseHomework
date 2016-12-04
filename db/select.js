@@ -127,6 +127,35 @@ function books_info(bsids, bookids, callback) {
     });
 }
 
+function order_info(account, orderno, callback) {
+    var sql = 
+        `
+        select [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo}, 
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderTime},
+        ${con.sBookStore}.${con.sBSID}, ${con.sBookStore}.${con.sBSName},
+        ${con.sBook}.${con.sBookId}, ${con.sBook}.${con.sBookName},
+        ${con.sOrderBook}.${con.sBookCount},
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sTotalPrice}
+        from [${con.sRoot}].[${con.sDbo}].[${con.sOrder}],
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrderBook}] as ${con.sOrderBook},
+        [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] as ${con.sBookStore},
+        [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}
+        where [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sAccount} = '${account}'
+        and ${con.sOrderBook}.${con.sBSID} = ${con.sBookStore}.${con.sBSID}
+        and ${con.sOrderBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+        and [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo} = ${con.sOrderBook}.${con.sOrderNo}
+        and [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo} = '${orderno}'
+        order by [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo};
+        `;
+
+        set(sql, function(rows){
+            var list = parseOrderBook(rows);
+            if (callback) {
+                callback(list);
+            }
+        });
+}
+
 function bsid_booknames_inquire_book(bsid, booknames, callback) {
     var sql = "";
     booknames.forEach(function(element, index, array){
@@ -454,7 +483,6 @@ function parseOrderBook(rows) {
     return list;
 }
 
-function order_info() {}
 
 function set(sqlstr, callback) {
     var connection = new mssql.Connection(config);

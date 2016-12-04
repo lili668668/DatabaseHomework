@@ -11,6 +11,7 @@ var tool = require('./tool/mytool.js');
 var db_insert = require('./db/insert.js');
 var db_select = require('./db/select.js');
 var db_update = require('./db/update.js');
+var con = require('./db/dbConst.js');
 
 var app = express();
 var server = http.createServer(app);
@@ -291,6 +292,18 @@ app.get('/inquire_book', function(request, response){
     }
 });
 
+app.get('/inquire_book_process', function(request, response) {
+    if (request.session.login) {
+        if (request.session.orderno) {
+            response.redirect('/update_order');
+        } else {
+            response.redirect('/add_order');
+        }
+    } else {
+        response.redirect('/');
+    }
+});
+
 app.get('/add_order', function(request, response) {
     if (request.session.login) {
         var bsids = request.session.bsids;
@@ -349,17 +362,104 @@ app.get('/add_order_process', function(request, response) {
 
         }
 
-        response.redirect('/add_order_cancel');
+        response.redirect('/order_cancel');
     } else {
         response.redirect('/');
     }
 });
 
-app.get('/add_order_cancel', function(request, response) {
+app.get('/order_cancel', function(request, response) {
     request.session.bsids = undefined;
     request.session.bookids = undefined;
     request.session.counts = undefined;
-    response.redirect('/inquire_book');
+    request.session.orderno = undefined;
+    response.sendFile(__dirname + '/html/redirect.html');
+});
+
+app.get('/update_half', function(request, response) {
+    var orderno = request.query["OrderNo"];
+    request.session.orderno = orderno;
+    db_select.order_info(request.session.login, orderno, function(rows){
+        request.session.bsids = rows[0][con.sBSID];
+        request.session.bookids = rows[0][con.sBookId];
+        request.session.counts = rows[0][con.sBookCount];
+
+        response.format({
+            "text": function() {
+                response.send("OK");
+            }
+        });
+    });
+});
+
+app.get('/update_order', function(request, response){
+    if (request.session.login) {
+        var bsids = request.session.bsids;
+        var bookids = request.session.bookids;
+        var counts = request.session.counts;
+        if (bsids && bookids) {
+            db_select.books_info(bsids, bookids, function(rows){
+                var sendstr = render.setShopcarTable(__dirname + '/html/update_order.html', "#table", rows, bsids, bookids, counts);
+                response.send(sendstr);
+            });
+        } else {
+            var sendstr = render.setText(__dirname + '/html/update_order.html', '#table', "沒有商品資料");
+            response.send(sendstr);
+        }
+    } else {
+        response.redirect('/');
+    }
+});
+
+app.get('/update_order_process', function(request, response) {
+    if (request.session.login) {
+
+        var bsids = request.session.bsids;
+        var bookids = request.session.bookids;
+        var counts = request.session.counts;
+
+        var newbsids = [];
+        var newbookids = [];
+        var newcounts = [];
+
+        counts.forEach(function(element, index, array){
+            if (parseInt(element) > 0) {
+                newbsids.push(bsids[index]);
+                newbookids.push(bookids[index]);
+                newcounts.push(element);
+            }
+        });
+
+        var bsids = newbsids;
+        var bookids = newbookids;
+        var counts = newcounts;
+
+        if (bookids.length != 0) {
+            db_select.books_info(bsids, bookids, function(rows){
+                var all_price = 0;
+                rows.forEach(function(element, index, array) {
+                    var countindex = tool.shopcar_findcountindex(bsids, bookids, element["BSID"][0], element["BookID"][0]);
+                    var count = counts[countindex];
+                    all_price += parseInt(element["Price"]) * count;
+                });
+                if (request.session.orderno) {
+                    db_update.update_order(request.session.orderno, request.session.login, bsids, bookids, counts, all_price);
+                } else {
+                    db_select.getOrderNo(function(id){
+                        var no = "B" + id;
+                        db_insert.add_order(no, request.session.login, bsids, bookids, counts, all_price);
+                    });
+
+                }
+                response.redirect('/order_cancel');
+            });
+
+        }
+
+    } else {
+        response.redirect('/');
+    }
+    
 });
 
 app.get('/update_order_change_line', function(request, response) {
@@ -457,6 +557,7 @@ app.get('/logout', function(request, response){
     request.session.bsids = undefined;
     request.session.bookids = undefined;
     request.session.counts = undefined;
+    request.session.orderno = undefined;
     response.redirect("/");
 });
 

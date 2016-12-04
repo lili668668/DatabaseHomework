@@ -68,7 +68,7 @@ function setIndexOrderTable(htmlFile, markid, rows) {
 
         var tmp = `
             <div class="color">
-                <div>訂單編號: <span class="OrderNo">${element[con.sOrderNo]}</span></div>
+                <div class="target">訂單編號: <span class="OrderNo">${element[con.sOrderNo]}</span></div>
                 <div>下單時間: <span class="OrderTime">${element[con.sOrderTime]}</span></div>
                 <div>總價格: <span class="Total_Price">${element[con.sTotalPrice]}</span></div>
                 <table border="1">

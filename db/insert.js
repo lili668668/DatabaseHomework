@@ -165,3 +165,4 @@ module.exports.register_orderMan = register_orderMan;
 module.exports.add_book = add_book;
 module.exports.add_bookstore = add_bookstore;
 module.exports.add_order = add_order;
+module.exports.add_order_book = add_order_book;
