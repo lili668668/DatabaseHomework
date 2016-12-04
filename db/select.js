@@ -258,7 +258,18 @@ function orderMan_get_bookstore(account, callback) {
 
 function bookstore_get_allBook(bsid, callback) {
 
-    var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBSID} = '${bsid}';`;
+    var sql = 
+        `
+        select ${con.sBook}.*, ${con.sAuthor}.*, ${con.sBookStoreBook}.Price
+        from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] as ${con.sBookStoreBook},
+        [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook},
+        [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] as ${con.sAuthor},
+        [${con.sRoot}].[${con.sDbo}].[${con.sAuthorBook}] as ${con.sAuthorBook}
+        where ${con.sBookStoreBook}.${con.sBSID} = '${bsid}'
+        and ${con.sAuthorBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+        and ${con.sAuthorBook}.${con.sAuthorId} = ${con.sAuthor}.${con.sAuthorId}
+        and ${con.sBook}.${con.sBookId} = ${con.sBookStoreBook}.${con.sBookId};
+        `;
 
     set(sql, function(rows) {
         if (callback) {

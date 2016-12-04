@@ -89,6 +89,129 @@ function setIndexOrderTable(htmlFile, markid, rows) {
     return $.html();
 }
 
+function setManageBookTable(htmlFile, markid, rows) {
+    var html = fs.readFileSync(htmlFile);
+    var $ = cheerio.load(html);
+
+    if (rows.length == 0) {
+        $(markid).append("<p>無書本資料</p>");
+    } else {
+        var header = 
+            `
+                <tr>
+                    <th>書號</th>
+                    <th>書名</th>
+                    <th>作者</th>
+                    <th>出版商</th>
+                    <th>價格</th>
+                    <th>修改</th>
+                </tr>
+            `;
+        $(markid).append(header);
+        var presame = false;
+        var len = rows.length;
+        var body = "";
+        rows.forEach(function(element, index, array){
+            var last =  index == len - 1;
+            var nextsame = false;
+            if (!last) {
+                nextsame = (element["BookID"] == array[index + 1]["BookID"]);
+            }
+
+            if (!presame && last) {
+                var info = 
+                    `
+                    <tr>
+                        <td id="bookid">${element["BookID"]}</td>
+                        <td>${element["BookName"]}</td>
+                        <td>${element["Name"]}</td>
+                        <td>${element["Publisher"]}</td>
+                        <td>${element["Price"]}</td>
+                        <td class="parent">
+                            <form method="POST" action="/update_book">
+                                <input name="bookid" style="display: none" value='${element["BookID"]}'>
+                                <button type="submit" class="update">修改</button>
+                            </form>
+                        </td>
+                    </tr>
+                    `;
+                body += info;
+
+            } else if (presame && last) {
+                var info = 
+                    `
+                        , ${element["Name"]}</td>
+                        <td>${element["Publisher"]}</td>
+                        <td>${element["Price"]}</td>
+                        <td class="parent">
+                            <form method="POST" action="/update_book">
+                                <input name="bookid" style="display: none" value='${element["BookID"]}'>
+                                <button type="submit" class="update">修改</button>
+                            </form>
+                        </td>
+                    </tr>
+                    `;
+                body += info;
+
+            } else if (!presame && !nextsame) {
+                var info = 
+                    `
+                    <tr>
+                        <td id="bookid">${element["BookID"]}</td>
+                        <td>${element["BookName"]}</td>
+                        <td>${element["Name"]}</td>
+                        <td>${element["Publisher"]}</td>
+                        <td>${element["Price"]}</td>
+                        <td class="parent">
+                            <form method="POST" action="/update_book">
+                                <input name="bookid" style="display: none" value='${element["BookID"]}'>
+                                <button type="submit" class="update">修改</button>
+                            </form>
+                        </td>
+                    </tr>
+                    `;
+                body += info;
+                presame = false;
+                
+            } else if (!presame && nextsame) {
+                var info = 
+                    `
+                    <tr>
+                        <td id="bookid">${element["BookID"]}</td>
+                        <td>${element["BookName"]}</td>
+                        <td>${element["Name"]}
+                    `;
+                body += info;
+                presame = true;
+            } else if (presame && !nextsame) {
+                var info = 
+                    `
+                        , ${element["Name"]}</td>
+                        <td>${element["Publisher"]}</td>
+                        <td>${element["Price"]}</td>
+                        <td class="parent">
+                            <form method="POST" action="/update_book">
+                                <input name="bookid" style="display: none" value='${element["BookID"]}'>
+                                <button type="submit" class="update">修改</button>
+                            </form>
+                        </td>
+                    `;
+                body += info;
+                presame = false;
+
+            } else if (presame && nextsame) {
+                var info = ", " + element["Name"];
+                body += info;
+                presame = true;
+            }
+
+        });
+    }
+    $(markid).append(body);
+    return $.html();
+
+}
+
 function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
     var html = fs.readFileSync(htmlFile);
     var $ = cheerio.load(html);
@@ -282,10 +405,7 @@ function setAddBook_Bookstore(htmlFile, markid, belongBookstore, bookstoreId_arr
         str += `<option value="${belongBookstore['BSID']}" selected>${belongBookstore['BSName']}</option>`
     } else {
         var len = bookstoreId_array.length;
-        str += '<option value="none" selected>請選擇擁有書店</option>';
-        for (var cnt = 0;cnt < len;cnt++) {
-            str += `<option value="${bookstoreId_array[cnt]}">${bookstoreName_array[cnt]}</option>`;
-        }
+        str += '<option value="none" selected>請去新增書店</option>';
     }
 
     str += '</select><p class="check" id="checkBookstore"></p>';
@@ -300,6 +420,7 @@ module.exports.setDroplist = setDroplist;
 module.exports.setText = setText;
 module.exports.setTexts = setTexts;
 module.exports.setShopcarTable = setShopcarTable;
+module.exports.setManageBookTable = setManageBookTable;
 module.exports.setIndexOrderTable = setIndexOrderTable;
 module.exports.setButton = setButton;
 module.exports.setStatusItem = setStatusItem;

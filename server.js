@@ -45,6 +45,7 @@ app.get('/', function(request,response){
             if (request.session.type == 'om') {
                 sendHtml = render.setHTMLButton(sendHtml, "#insert", "GET", "/manage_book", "管理書籍");
                 sendHtml = render.setHTMLButton(sendHtml, "#insert", "GET", "/manage_bookstore", "管理書店");
+                sendHtml = render.setHTMLButton(sendHtml, "#insert", "GET", "/manage_order", "管理訂單");
                 response.send(sendHtml);
             } else {
                 response.send(sendHtml);
@@ -180,7 +181,12 @@ app.get('/update_member', function(request, response){
 
 app.get('/manage_book', function(request, response){
     if (request.session.login && request.session.type == 'om') {
-        response.sendFile(__dirname + '/html/manage_book.html');
+        db_select.orderMan_get_bookstore(request.session.login, function(rows){
+            db_select.bookstore_get_allBook(rows["BSID"], function(r){
+                var sendstr = render.setManageBookTable(__dirname + '/html/manage_book.html', "#books_info", r);
+                response.send(sendstr);
+            });
+        });
     } else {
         response.redirect('/');
     }
@@ -226,6 +232,11 @@ app.post('/add_book_process', function(request, response){
     } else {
         response.redirect('/');
     }
+});
+
+app.post('/update_book', function(request, response){
+    console.log(request.body.bookid);
+    response.end();
 });
 
 app.get('/manage_bookstore', function(request, response) {
@@ -726,7 +737,7 @@ io.on('connection', function(socket){
 
 });
 
-server.listen("8080", config.get('IP'), function () {
-    console.log( "Listening on " + config.get('IP') + ", port " + "8080");
+server.listen("8000", config.get('IP'), function () {
+    console.log( "Listening on " + config.get('IP') + ", port " + "8000");
 });
 

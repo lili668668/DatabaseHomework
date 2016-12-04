@@ -30,7 +30,7 @@ $(function(){
 
     $("#bookstore").change(function() {
         if ( $( this ).val() == "none" ) {
-            $("#checkBookstore").text("請選擇一家書店");
+            $("#checkBookstore").text("請去新增書店");
         } else {
             $("#checkStatus").text("");
         }
