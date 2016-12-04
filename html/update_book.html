@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+    <head>
+        <title>修改書籍</title>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+        <link rel="stylesheet" href="css/add_book.css" type="text/css" media="all" />
+    </head>
+    <body>
+        <h1>修改書籍</h1>
+        <form method="POST" action="/update_book_process" id="form">
+            <p>書籍代碼 <span name="id" id="id"></span></p>
+            <input id="update_id" name="id" style="display: none;">
+            <p>書籍名稱</p>
+            <input name="name" id="name" type="text">
+            <p class="check" id="checkName"></p>
+            <p>作者(多位作者的話請用逗號分隔)</p>
+            <input name="author" id="author" type="text" placeholder="ex:藤子布二熊, JK邏霖">
+            <p class="check" id="checkAuthor"></p>
+            <p>售價</p>
+            <input name="price" id="price" type="number"> 
+            <p class="check" id="checkPrice"></p>
+            <p>出版商名稱</p>
+            <input name="publisher" id="publisher" type="text">
+            <p class="check" id="checkPulisher"></p>
+            <p>書店</p>
+            <div id="bookstore_info"></div>
+            <p class="check" id="checkStatus"></p>
+            <button id="submit" type="submit" disabled>提交</button>
+        </form>
+        <form method="POST" action="/delete_book">
+            <input id="delete_id" name="id" style="display: none;">
+            <button id="cancel" type="submit">刪除書籍</button>
+        </form>
+        <form method="GET" action="/manage_book">
+            <button id="cancel" type="submit">取消</button>
+        </form>
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<script src="js/update_book.js"></script>
+    </body>
+</html>

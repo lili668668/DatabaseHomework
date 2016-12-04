@@ -195,24 +195,11 @@ app.get('/manage_book', function(request, response){
 app.get('/add_book', function(request, response){
     if (request.session.login && request.session.type == 'om') {
         db_select.orderMan_get_bookstore(request.session.login, function(row) {
-            db_select.getAllBookstores(function(rows) {
-                var bookstoreId_array = [];
-                for (var cnt = 0;cnt < rows.length;cnt++) {
-                    bookstoreId_array.push(rows[cnt]['BSID']);
-                }
-                var bookstoreName_array = [];
-                for (var cnt = 0;cnt < rows.length;cnt++) {
-                    bookstoreName_array.push(rows[cnt]['BSName']);
-                }
-
-                var sendstr = render.setAddBook_Bookstore(
-                        __dirname + '/html/add_book.html',
-                        '#bookstore_info',
-                        row,
-                        bookstoreId_array,
-                        bookstoreName_array);
-                response.send(sendstr);
-            });
+            var sendstr = render.setAddBook_Bookstore(
+                    __dirname + '/html/add_book.html',
+                    '#bookstore_info',
+                    row);
+            response.send(sendstr);
         });
     } else {
         response.redirect('/');
@@ -235,8 +222,48 @@ app.post('/add_book_process', function(request, response){
 });
 
 app.post('/update_book', function(request, response){
-    console.log(request.body.bookid);
-    response.end();
+    if (request.session.login && request.session.type == 'om') {
+
+        db_select.orderMan_get_bookstore(request.session.login, function(rows){
+            db_select.books_info([rows["BSID"]], [request.body.bookid], function(r){
+                var authors = "";
+                var id = r[0]["BookID"][0];
+                r.forEach(function(element, index, array){
+                    if (index != 0) {
+                        authors += ", ";
+                    }
+                    authors += element["Name"];
+                });
+                var sendstr = render.setAddBook_Bookstore(
+                        __dirname + '/html/update_book.html',
+                        '#bookstore_info',
+                        rows);
+                sendstr = render.setHTMLText(sendstr, "#id", id);
+                var ids = ["#name", "#author", "#price", "#publisher", "#delete_id", "#update_id"];
+                var contents = [r[0]["BookName"], authors, r[0]["Price"], r[0]["Publisher"], id, id];
+                sendstr = render.fillBlank(sendstr, ids, contents);
+                response.send(sendstr);
+            });
+        });
+    } else {
+        response.redirect('/');
+    }
+});
+
+app.post('/update_book_process', function(request, response) {
+    if (request.session.login && request.session.type == 'om') {
+        var row = request.body;
+        if (!row) {
+            response.redirect('/manage_book');
+            return;
+        }
+
+        db_update.update_book(row.bookstore, row.id, row.name, row.price, row.author, row.publisher);
+        response.redirect('/');
+    
+    } else {
+        response.redirect('/');
+    }
 });
 
 app.get('/manage_bookstore', function(request, response) {

@@ -268,7 +268,8 @@ function bookstore_get_allBook(bsid, callback) {
         where ${con.sBookStoreBook}.${con.sBSID} = '${bsid}'
         and ${con.sAuthorBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
         and ${con.sAuthorBook}.${con.sAuthorId} = ${con.sAuthor}.${con.sAuthorId}
-        and ${con.sBook}.${con.sBookId} = ${con.sBookStoreBook}.${con.sBookId};
+        and ${con.sBook}.${con.sBookId} = ${con.sBookStoreBook}.${con.sBookId}
+        order by ${con.sBookStoreBook}.${con.sBSID}, ${con.sBookStoreBook}.${con.sBookId};
         `;
 
     set(sql, function(rows) {

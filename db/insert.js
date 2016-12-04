@@ -60,7 +60,8 @@ function add_bookstore_book(bookid, bsid, price) {
     set(sql);
 }
 
-function add_author(author, bookid) {
+// TODO: 需要修改資料
+function add_author(author, bookid, callback) {
     var authorlist = tool.split(author, ",");
 
     authorlist.forEach(function(authorName, index, array){
@@ -75,6 +76,9 @@ function add_author(author, bookid) {
                     var sql = `insert into ${con.sAuthor}(${con.sAuthorId}, ${con.sAuthorName}) values('A${authorNo}', '${authorName}');`;
                     set(sql, function(){
                         add_author_book('A' + authorNo, bookid);
+                        if (callback) {
+                            callback();
+                        }
                     });
                 });
             }
@@ -166,3 +170,4 @@ module.exports.add_book = add_book;
 module.exports.add_bookstore = add_bookstore;
 module.exports.add_order = add_order;
 module.exports.add_order_book = add_order_book;
+module.exports.add_author = add_author;

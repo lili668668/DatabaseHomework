@@ -57,31 +57,31 @@ function update_order_book(orderno, bsids, bookids, counts) {
     });
 }
 
-function add_book(bookid, bookname, price, author, publisher) {
+function update_book(bsid, bookid, bookname, price, author, publisher, callback) {
 
-    var sql = `insert into ${con.sBook}(${con.sBookId}, ${con.sBookName}, ${con.sPrice}, ${con.sPublisher}) values('${bookid}', '${bookname}', '${price}', '${publisher}');`;
+    var sql = `update ${con.sBook} set ${con.sBookName} = '${bookname}', ${con.sPublisher} = '${publisher}' where ${con.sBookId} = '${bookid}';`;
 
     set(sql, function(){
-        add_author(author, bookid);
-    });
-
-}
-
-function add_author(author, bookid) {
-    db_select.getAuthorId(function(authorid) {
-
-        var sql = `insert into ${con.sAuthor}(${con.sAuthorId}, ${con.sAuthorName}) values('A${authorid}', '${author}');`;
-        set(sql, function(){
-            add_author_book(authorid, bookid);
+        update_price(bsid, bookid, price);
+        db_delete.empty_authorbooks_from_book(bookid, function(){
+            db_insert.add_author(author, bookid, function(){
+                if (callback) {
+                    callback();
+                }
+            });
         });
     });
+
 }
 
-function add_author_book(authorid, bookid) {
+function update_price(bsid, bookid, price, callback) {
 
-    var sql = `insert into ${con.sAuthorBook}(${con.sAuthorId}, ${con.sBookId}) values('A${authorid}', '${bookid}');`;
-
-    set(sql);
+    var sql = `update ${con.sBookStoreBook} set ${con.sPrice} = '${price}' where ${con.sBSID} = '${bsid}' and ${con.sBookId} = '${bookid}';`;
+    set(sql, function() {
+        if (callback) {
+            callback();
+        }
+    });
 
 }
 
@@ -130,3 +130,5 @@ module.exports.update_ta = update_ta;
 module.exports.update_student = update_student;
 module.exports.update_orderMan = update_orderMan;
 module.exports.update_order = update_order;
+module.exports.update_book = update_book;
+module.exports.update_price = update_price;

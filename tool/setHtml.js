@@ -395,7 +395,7 @@ function setHTMLButton(html, markid, formmethed, formaction, buttonname) {
     return res;
 }
 
-function setAddBook_Bookstore(htmlFile, markid, belongBookstore, bookstoreId_array, bookstoreName_array) {
+function setAddBook_Bookstore(htmlFile, markid, belongBookstore) {
     var html = fs.readFileSync(htmlFile);
     var $ = cheerio.load(html);
 
@@ -404,7 +404,6 @@ function setAddBook_Bookstore(htmlFile, markid, belongBookstore, bookstoreId_arr
 
         str += `<option value="${belongBookstore['BSID']}" selected>${belongBookstore['BSName']}</option>`
     } else {
-        var len = bookstoreId_array.length;
         str += '<option value="none" selected>請去新增書店</option>';
     }
 
