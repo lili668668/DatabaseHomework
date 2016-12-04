@@ -95,7 +95,7 @@ function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
                         <td>${element["BSName"]}</td>
                         <td>${element["Price"]}</td>
                         <td id="c"><input type="number" class="count" value="${count}"></input></td>
-                        <td>${line_price}</td>
+                        <td class="linePrice">${line_price}</td>
                         <td class="parent"><button class="delete">刪除</button></td>
                     </tr>
                     `;
@@ -110,7 +110,7 @@ function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
                         <td>${element["BSName"]}</td>
                         <td>${element["Price"]}</td>
                         <td id="c"><input type="number" class="count" value="${count}"></input></td>
-                        <td>${line_price}</td>
+                        <td class="linePrice">${line_price}</td>
                         <td class="parent"><button class="delete">刪除</button></td>
                     </tr>
                     `;
@@ -128,7 +128,7 @@ function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
                         <td>${element["BSName"]}</td>
                         <td>${element["Price"]}</td>
                         <td id="c"><input type="number" class="count" value="${count}"></input></td>
-                        <td>${line_price}</td>
+                        <td class="linePrice">${line_price}</td>
                         <td class="parent"><button class="delete">刪除</button></td>
                     </tr>
                     `;
@@ -154,7 +154,7 @@ function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
                         <td>${element["BSName"]}</td>
                         <td>${element["Price"]}</td>
                         <td id="c"><input type="number" class="count" value="${count}"></input></td>
-                        <td>${line_price}</td>
+                        <td class="linePrice">${line_price}</td>
                         <td class="parent"><button class="delete">刪除</button></td>
                     `;
                 body += info;

@@ -21,5 +21,28 @@ $(function(){
             }
         });
     });
+
+    $(".count").change(function(){
+        var input = $(this);
+        var num = parseInt(input);
+        if (!isNaN(num) || num <= 0) {
+            input.val(0);
+        }
+            
+        var msg = {"bsid": input.parent("#c").siblings("#bsid").text(), "bookid": input.parent("#c").siblings("#bookid").text(), "count": input.val()};
+
+        var request = $.ajax({
+            url: "/update_order_change_line",
+            method: "GET",
+            data: msg,
+            dataType: "text"
+        });
+
+        request.done(function(res){
+            var prices = res.split(",");
+            input.parent("#c").siblings(".linePrice").text(prices[0]);
+            $("#all_price").text(prices[1]);
+        });
+    });
 });
 

@@ -309,6 +309,21 @@ app.get('/add_order_process', function(request, response) {
         var bookids = request.session.bookids;
         var counts = request.session.counts;
 
+        var newbsids = [];
+        var newbookids = [];
+        var newcounts = [];
+
+        counts.forEach(function(element, index, array){
+            if (parseInt(element) > 0) {
+                newbsids.push(bsids[index]);
+                newbookids.push(bookids[index]);
+                newcounts.push(element);
+            }
+        });
+
+        var bsids = newbsids;
+        var bookids = newbookids;
+        var counts = newcounts;
 
         if (bookids.length != 0) {
             db_select.books_info(bsids, bookids, function(rows){
@@ -337,6 +352,34 @@ app.get('/add_order_cancel', function(request, response) {
     request.session.bookids = undefined;
     request.session.counts = undefined;
     response.redirect('/inquire_book');
+});
+
+app.get('/update_order_change_line', function(request, response) {
+    if (request.session.login) {
+        var bsid = request.query["bsid"];
+        var bookid = request.query["bookid"];
+        var count = request.query["count"];
+        var countindex = tool.shopcar_findcountindex(request.session.bsids, request.session.bookids, bsid, bookid);
+        if (countindex >= 0) {
+            request.session.counts[countindex] = count;
+            tool.getAllPriceAndLinePrice(request.session.bsids, request.session.bookids, request.session.counts, countindex, function(linePrice, allPrice){
+                response.format({
+                    "text": function() {
+                        response.send(linePrice + "," + allPrice);
+                    }
+                });
+            });
+        } else {
+            response.format({
+                "text": function() {
+                    response.send("");
+                }
+            });
+        }
+
+    } else {
+        response.redirect('/');
+    }
 });
 
 app.get('/update_order_delete_line', function(request, response){
