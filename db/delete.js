@@ -13,6 +13,18 @@ function empty_books_from_order(orderno, callback) {
     });
 }
 
+function remove_a_order(orderno, callback) {
+    var sql = `delete from  [${con.sRoot}].[${con.sDbo}].[${con.sOrder}] where ${con.sOrderNo} = '${orderno}';`;
+
+    empty_books_from_order(orderno, function(){
+        set(sql, function() {
+            if (callback) {
+                callback();
+            }
+        });
+    });
+}
+
 function set(sqlstr, callback) {
     var connection = new mssql.Connection(config);
     connection.connect(function(err) {
@@ -53,3 +65,4 @@ function set(sqlstr, callback) {
 
 }
 module.exports.empty_books_from_order = empty_books_from_order;
+module.exports.remove_a_order = remove_a_order;

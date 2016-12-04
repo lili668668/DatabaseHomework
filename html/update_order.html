@@ -15,8 +15,11 @@
         <form method="GET" action="/inquire_book" id="form">
             <button id="submit" type="submit">新增購買書籍</button>
         </form>
+        <form method="GET" action="delete_order">
+            <button id="delete" type="submit">刪除訂單</button>
+        </form>
         <form method="GET" action="/order_cancel">
-            <button id="cancel" type="submit">取消訂單</button>
+            <button id="cancel" type="submit">取消</button>
         </form>
         <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
         <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>

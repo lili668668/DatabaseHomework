@@ -11,6 +11,7 @@ var tool = require('./tool/mytool.js');
 var db_insert = require('./db/insert.js');
 var db_select = require('./db/select.js');
 var db_update = require('./db/update.js');
+var db_delete = require('./db/delete.js');
 var con = require('./db/dbConst.js');
 
 var app = express();
@@ -599,6 +600,20 @@ app.post('/update_member_process', function(request, response){
 
     response.redirect("/");
 
+});
+
+app.get('/delete_order', function(request, response){
+    if (request.session.login) {
+        if (request.session.orderno) {
+            db_delete.remove_a_order(request.session.orderno, function() {
+                response.redirect('/order_cancel');
+            });
+        } else {
+            response.redirect('/order_cancel');
+        }
+    } else {
+        response.redirect('/');
+    }
 });
 
 app.get('/add_shopping_car', function(request, response){
