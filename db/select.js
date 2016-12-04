@@ -365,6 +365,34 @@ function author_get_name(authorid, callback) {
     });
 }
 
+function memeber_get_order(account, callback) {
+    var sql = 
+        `
+        select [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo}, 
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderTime},
+        ${con.sBookStore}.${con.sBSID}, ${con.sBookStore}.${con.sBSName},
+        ${con.sBook}.${con.sBookId}, ${con.sBook}.${con.sBookName},
+        ${con.sOrderBook}.${con.sBookCount},
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sTotalPrice}
+        from [${con.sRoot}].[${con.sDbo}].[${con.sOrder}],
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrderBook}] as ${con.sOrderBook},
+        [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] as ${con.sBookStore},
+        [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}
+        where [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sAccount} = '${account}'
+        and ${con.sOrderBook}.${con.sBSID} = ${con.sBookStore}.${con.sBSID}
+        and ${con.sOrderBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+        and [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo} = ${con.sOrderBook}.${con.sOrderNo}
+        order by [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo};
+        `;
+
+        set(sql, function(rows) {
+            var list = parseOrderBook(rows);
+            if (callback) {
+                callback(list);
+            }
+        });
+}
+
 function getAllBookstores(callback) {
 
     var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}];`;
@@ -386,6 +414,47 @@ function getAllAccounts(callback) {
         }
     });
 }
+
+function parseOrderBook(rows) {
+    var list = [];
+    // var obj = {OrderNo, OrderTime, BSID:[], BSName:[], BookID:[], BookName:[], Book_Count:[], Total_Price};
+    
+    var presame = false;
+    var len = rows.length;
+    rows.forEach(function(element, index, array) {
+        var last = index == len - 1;
+        var nextsame = false;
+        if (!last) {
+            nextsame = element[con.sOrderNo] == array[index + 1][con.sOrderNo];
+        }
+
+        if (!presame) {
+            var obj = {};
+            obj[con.sOrderNo] = element[con.sOrderNo];
+            obj[con.sOrderTime] = element[con.sOrderTime];
+            obj[con.sBSID] = [element[con.sBSID]];
+            obj[con.sBSName] = [element[con.sBSName]];
+            obj[con.sBookId] = [element[con.sBookId]];
+            obj[con.sBookName] = [element[con.sBookName]];
+            obj[con.sBookCount] = [element[con.sBookCount]];
+            obj[con.sTotalPrice] = element[con.sTotalPrice];
+            list.push(obj);
+        } else {
+            list[list.length - 1][con.sBSID].push(element[con.sBSID]);
+            list[list.length - 1][con.sBSName].push(element[con.sBSName]);
+            list[list.length - 1][con.sBookId].push(element[con.sBookId]);
+            list[list.length - 1][con.sBookName].push(element[con.sBookName]);
+            list[list.length - 1][con.sBookCount].push(element[con.sBookCount]);
+        }
+
+        presame = nextsame;
+
+    });
+
+    return list;
+}
+
+function order_info() {}
 
 function set(sqlstr, callback) {
     var connection = new mssql.Connection(config);
@@ -423,6 +492,7 @@ module.exports.ta_info = ta_info;
 module.exports.student_info = student_info;
 module.exports.orderMan_info = orderMan_info;
 module.exports.books_info = books_info;
+module.exports.order_info = order_info;
 module.exports.bsid_booknames_inquire_book = bsid_booknames_inquire_book;
 module.exports.bsid_inquire_book = bsid_inquire_book;
 module.exports.booknames_inquire_book = booknames_inquire_book;
@@ -430,6 +500,7 @@ module.exports.orderMan_get_bookstore = orderMan_get_bookstore;
 module.exports.bookstore_get_allBook = bookstore_get_allBook;
 module.exports.book_get_authors = book_get_authors;
 module.exports.author_get_name = author_get_name;
+module.exports.memeber_get_order = memeber_get_order;
 module.exports.book_exist = book_exist;
 module.exports.book_store_exist = book_store_exist;
 module.exports.account_exist = account_exist;

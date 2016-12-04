@@ -1,6 +1,7 @@
 var fs = require('fs');
 var cheerio = require('cheerio');
 var tool = require('./mytool.js');
+var con = require('../db/dbConst.js');
 
 function setDroplist(htmlFile, droplistId, valueArr, optionArr) {
     var html = fs.readFileSync(htmlFile);
@@ -42,6 +43,50 @@ function setTexts(htmlFile, markid, titles, texts) {
     $(markid).append(str);
     var res = $.html();
     return res;
+}
+
+function setIndexOrderTable(htmlFile, markid, rows) {
+    
+    var html = fs.readFileSync(htmlFile);
+    var $ = cheerio.load(html);
+
+    var str = "";
+    rows.forEach(function(element, index, array) {
+        var tmptable = "";
+
+        element[con.sBSName].forEach(function(e, i, a){
+            var s = `
+                <tr>
+                    <td>${e}</td>
+                    <td>${element[con.sBookName][i]}</td>
+                    <td>${element[con.sBookCount][i]}</td>
+                </tr>
+                `;
+            tmptable += s;
+        });
+
+
+        var tmp = `
+            <div class="color">
+                <div>訂單編號: <span class="OrderNo">${element[con.sOrderNo]}</span></div>
+                <div>下單時間: <span class="OrderTime">${element[con.sOrderTime]}</span></div>
+                <div>總價格: <span class="Total_Price">${element[con.sTotalPrice]}</span></div>
+                <table border="1">
+                    <tr>
+                        <th>出貨書店</th>
+                        <th>書名</th>
+                        <th>訂購數量</th>
+                    </tr>
+                    ${tmptable}
+                </table>
+                <button class="update">修改訂單</button>
+            </div>
+            `;
+        str += tmp;
+    });
+
+    $(markid).append(str);
+    return $.html();
 }
 
 function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
@@ -255,6 +300,7 @@ module.exports.setDroplist = setDroplist;
 module.exports.setText = setText;
 module.exports.setTexts = setTexts;
 module.exports.setShopcarTable = setShopcarTable;
+module.exports.setIndexOrderTable = setIndexOrderTable;
 module.exports.setButton = setButton;
 module.exports.setStatusItem = setStatusItem;
 module.exports.setHTMLButton = setHTMLButton;

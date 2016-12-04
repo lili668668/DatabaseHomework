@@ -34,13 +34,21 @@ app.use( cookie_session({
 
 app.get('/', function(request,response){
     if (request.session.login) {
-        if (request.session.type == 'om') {
-            var sendHtml = render.setButton(__dirname + "/html/login_index.html", "#insert", "GET", "/manage_book", "管理書籍");
-            sendHtml = render.setHTMLButton(sendHtml, "#insert", "GET", "/manage_bookstore", "管理書店");
-            response.send(sendHtml);
-        } else {
-            response.sendFile(__dirname + "/html/login_index.html");
-        }
+        var sendHtml = "";
+
+        db_select.memeber_get_order(request.session.login, function(rows){
+            sendHtml = render.setIndexOrderTable(__dirname + '/html/login_index.html', "#order_info", rows);
+
+
+            if (request.session.type == 'om') {
+                sendHtml = render.setHTMLButton(sendHtml, "#insert", "GET", "/manage_book", "管理書籍");
+                sendHtml = render.setHTMLButton(sendHtml, "#insert", "GET", "/manage_bookstore", "管理書店");
+                response.send(sendHtml);
+            } else {
+                response.send(sendHtml);
+            }
+        });
+
     } else {
         response.sendFile(__dirname + "/index.html");
     }
@@ -602,7 +610,7 @@ io.on('connection', function(socket){
 
 });
 
-server.listen("8800", config.get('IP'), function () {
-    console.log( "Listening on " + config.get('IP') + ", port " + "8800");
+server.listen("8080", config.get('IP'), function () {
+    console.log( "Listening on " + config.get('IP') + ", port " + "8080");
 });
 
