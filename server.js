@@ -7,7 +7,7 @@ var cc = require('config-multipaas');
 var fs = require('fs');
 
 var render = require('./tool/setHtml.js');
-var tool = require('./tool/string_tool.js');
+var tool = require('./tool/mytool.js');
 var db_insert = require('./db/insert.js');
 var db_select = require('./db/select.js');
 var db_update = require('./db/update.js');
@@ -304,22 +304,29 @@ app.get('/add_order', function(request, response) {
 
 app.get('/add_order_process', function(request, response) {
     if (request.session.login) {
+
         var bsids = request.session.bsids;
         var bookids = request.session.bookids;
         var counts = request.session.counts;
-        db_select.books_info(bsids, bookids, function(rows){
-            var all_price = 0;
-            rows.forEach(function(element, index, array) {
-                var countindex = render.shopcar_findcountindex(bsids, bookids, element["BSID"][0], element["BookID"][0]);
-                var count = counts[countindex];
-                all_price += parseInt(element["Price"]) * count;
+
+
+        if (bookids.length != 0) {
+            db_select.books_info(bsids, bookids, function(rows){
+                var all_price = 0;
+                rows.forEach(function(element, index, array) {
+                    var countindex = tool.shopcar_findcountindex(bsids, bookids, element["BSID"][0], element["BookID"][0]);
+                    var count = counts[countindex];
+                    all_price += parseInt(element["Price"]) * count;
+                });
+                db_select.getOrderNo(function(id){
+                    var no = "B" + id;
+                    db_insert.add_order(no, request.session.login, bsids, bookids, counts, all_price);
+                });
             });
-            db_select.getOrderNo(function(id){
-                var no = "B" + id;
-                db_insert.add_order(no, request.session.login, bsids, bookids, counts, all_price);
-                response.redirect('/add_order_cancel');
-            });
-        });
+
+        }
+
+        response.redirect('/add_order_cancel');
     } else {
         response.redirect('/');
     }
@@ -330,6 +337,50 @@ app.get('/add_order_cancel', function(request, response) {
     request.session.bookids = undefined;
     request.session.counts = undefined;
     response.redirect('/inquire_book');
+});
+
+app.get('/update_order_delete_line', function(request, response){
+    if (request.session.login) {
+        var bsids = request.session.bsids;
+        var bookids = request.session.bookids;
+        var counts = request.session.counts;
+        var bsid = request.query["bsid"];
+        var bookid = request.query["bookid"];
+        var countindex = tool.shopcar_findcountindex(bsids, bookids, bsid, bookid);
+        if (counts[countindex]) {
+            var newbsids = [];
+            var newbookids = [];
+            var newcounts = [];
+
+            bsids.forEach(function(element, index, array){
+                if (index != countindex) {
+                    newbsids.push(element);
+                    newbookids.push(bookids[index]);
+                    newcounts.push(counts[index]);
+                }
+            });
+
+            request.session.bsids = newbsids;
+            request.session.bookids = newbookids;
+            request.session.counts = newcounts;
+
+            tool.getAllPrice(newbsids, newbookids, newcounts, function(allPrice){
+                response.format({
+                    "text": function() {
+                        response.send(allPrice + "");
+                    }
+                })
+            });
+        } else {
+            response.format({
+                "text": function() {
+                    response.send("");
+                }
+            });
+        }
+    } else {
+        response.redirect('/');
+    }
 });
 
 app.post('/login_process', function(request, response){
@@ -411,13 +462,12 @@ app.get('/add_shopping_car', function(request, response){
             session.counts = [];
         }
 
-        var index = render.shopcar_findcountindex(session.bsids, session.bookids, request.query["bsid"], request.query["bookid"]);
+        var index = tool.shopcar_findcountindex(session.bsids, session.bookids, request.query["bsid"], request.query["bookid"]);
         if (index < 0) {
             session.bsids.push(request.query["bsid"]);
             session.bookids.push(request.query["bookid"]);
             session.counts.push(parseInt(request.query["count"]));
         } else {
-            session.bsids.push(request.query["bsid"]);
             session.counts[index] = session.counts[index] + parseInt(request.query["count"]);
         }
 

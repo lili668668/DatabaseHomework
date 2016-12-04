@@ -2,7 +2,7 @@ var config = require('./dbConfig.js');
 var con = require('./dbConst.js');
 var mssql = require('mssql');
 var db_select = require('./select.js');
-var tool = require('../tool/string_tool.js');
+var tool = require('../tool/mytool.js');
 
 function register_member(account, password, name, ssid, email, type, callback) {
 

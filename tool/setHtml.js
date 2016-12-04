@@ -1,5 +1,6 @@
 var fs = require('fs');
 var cheerio = require('cheerio');
+var tool = require('./mytool.js');
 
 function setDroplist(htmlFile, droplistId, valueArr, optionArr) {
     var html = fs.readFileSync(htmlFile);
@@ -77,7 +78,7 @@ function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
                 nextsame = (element["BookID"][0] == array[index + 1]["BookID"][0] && 
                         element["BSID"][0] == array[index + 1]["BSID"][0]);
             }
-            var countindex = shopcar_findcountindex(bsids, bookids, element["BSID"][0], element["BookID"][0]);
+            var countindex = tool.shopcar_findcountindex(bsids, bookids, element["BSID"][0], element["BookID"][0]);
             var count = counts[countindex];
             var line_price = parseInt(element["Price"]) * count;
             all_price += line_price;
@@ -93,7 +94,7 @@ function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
                         <td id="bsid">${element["BSID"][0]}</td>
                         <td>${element["BSName"]}</td>
                         <td>${element["Price"]}</td>
-                        <td id="c"><input type="number" id="count" value="${count}"></input></td>
+                        <td id="c"><input type="number" class="count" value="${count}"></input></td>
                         <td>${line_price}</td>
                         <td class="parent"><button class="delete">刪除</button></td>
                     </tr>
@@ -108,7 +109,7 @@ function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
                         <td id="bsid">${element["BSID"][0]}</td>
                         <td>${element["BSName"]}</td>
                         <td>${element["Price"]}</td>
-                        <td id="c"><input type="number" id="count" value="${count}"></input></td>
+                        <td id="c"><input type="number" class="count" value="${count}"></input></td>
                         <td>${line_price}</td>
                         <td class="parent"><button class="delete">刪除</button></td>
                     </tr>
@@ -126,7 +127,7 @@ function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
                         <td id="bsid">${element["BSID"][0]}</td>
                         <td>${element["BSName"]}</td>
                         <td>${element["Price"]}</td>
-                        <td id="c"><input type="number" id="count" value="${count}"></input></td>
+                        <td id="c"><input type="number" class="count" value="${count}"></input></td>
                         <td>${line_price}</td>
                         <td class="parent"><button class="delete">刪除</button></td>
                     </tr>
@@ -152,7 +153,7 @@ function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
                         <td id="bsid">${element["BSID"][0]}</td>
                         <td>${element["BSName"]}</td>
                         <td>${element["Price"]}</td>
-                        <td id="c"><input type="number" id="count" value="${count}"></input></td>
+                        <td id="c"><input type="number" class="count" value="${count}"></input></td>
                         <td>${line_price}</td>
                         <td class="parent"><button class="delete">刪除</button></td>
                     `;
@@ -167,20 +168,10 @@ function setShopcarTable(htmlFile, markid, rows, bsids, bookids, counts) {
 
         });
     }
-    var aprice = `<div>總價格: ${all_price}</div>`;
+    var aprice = `<div>總價格: <span id="all_price">${all_price}</sapn></div>`;
     body += aprice;
     $(markid).append(body);
     return $.html();
-}
-
-function shopcar_findcountindex(bsids, bookids, bsid, bookid) {
-    var flag = -1;
-    bsids.forEach(function(element, index, array){
-        if (element == bsid && bookids[index] == bookid) {
-            flag = index;
-        }
-    });
-    return flag;
 }
 
 function setButton(htmlFile, markid, formmethed, formaction, buttonname) {
@@ -270,4 +261,3 @@ module.exports.setHTMLButton = setHTMLButton;
 module.exports.setHTMLText = setHTMLText;
 module.exports.fillBlank = fillBlank;
 module.exports.setAddBook_Bookstore = setAddBook_Bookstore;
-module.exports.shopcar_findcountindex = shopcar_findcountindex;

@@ -138,7 +138,6 @@ socket.on("re_inquire_book", function(msg){
                     dataType: "text"
                 });
                 request.done(function(res){
-                    console.log(res);
                     $("#book_num").text(res);
                 });
             }

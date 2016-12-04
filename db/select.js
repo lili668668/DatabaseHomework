@@ -1,6 +1,7 @@
 var config = require('./dbConfig.js');
 var mssql = require('mssql');
-var con = require('./dbConst.js')
+var con = require('./dbConst.js');
+var tool = require('../tool/mytool.js');
 
 function verification_account(account, password, callback) {
 
@@ -319,7 +320,8 @@ function getOrderNo(callback) {
         if (callback) {
             var max = 1;
             rows.forEach(function(element, index, array) {
-                var no = element.substr(1, element.length - 1);
+
+                var no = element[con.sOrderNo].substr(1, element[con.sOrderNo].length - 1);
                 var num = parseInt(no, 10);
                 if (max < num) {
                     max = num;
