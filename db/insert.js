@@ -2,6 +2,7 @@ var config = require('./dbConfig.js');
 var con = require('./dbConst.js');
 var mssql = require('mssql');
 var db_select = require('./select.js');
+var db_update = require('./update.js');
 var tool = require('../tool/mytool.js');
 
 function register_member(account, password, name, ssid, email, type, callback) {
@@ -114,12 +115,22 @@ function add_order(orderno, account, bsid_array, bookid_array, bookcount_array, 
 
     set(sql, function(){
         add_order_book(orderno, bsid_array, bookid_array, bookcount_array);
+        add_qcount(account);
+    });
+}
+
+function add_qcount(account, callback) {
+    db_select.account_get_ordercount(account, function(qcount){
+        db_update.update_qcount(account, qcount, function(){
+            if (callback) {
+                callback();
+            }
+        });
     });
 }
 
 function add_order_book(orderno, bsid_array, bookid_array, bookcount_array) {
     bookid_array.forEach(function(element, index, array){
-
         var sql = `insert into ${con.sOrderBook}(${con.sOrderNo}, ${con.sBSID}, ${con.sBookId}, ${con.sBookCount}) values('${orderno}', '${bsid_array[index]}', '${element}', '${bookcount_array[index]}');`;
 
         set(sql);

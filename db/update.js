@@ -74,6 +74,23 @@ function update_book(bsid, bookid, bookname, price, author, publisher, callback)
 
 }
 
+function update_bookstore(bsid, bsname, city, bsphone){
+    var sql = `update ${con.sBookStore} set ${con.sBSName} = '${bsname}', ${con.sCity} = '${city}', ${con.sBSPhone} = '${bsphone}' where ${con.sBSID} = '${bsid}';`;
+
+    set(sql);
+
+}
+
+function update_qcount(account, qcount, callback) {
+
+    var sql = `update ${con.sMember} set ${con.sQcount} = '${qcount}' where ${con.sAccount} = '${account}';`;
+    set(sql, function(){
+        if (callback) {
+            callback();
+        }
+    });
+}
+
 function update_price(bsid, bookid, price, callback) {
 
     var sql = `update ${con.sBookStoreBook} set ${con.sPrice} = '${price}' where ${con.sBSID} = '${bsid}' and ${con.sBookId} = '${bookid}';`;
@@ -132,3 +149,5 @@ module.exports.update_orderMan = update_orderMan;
 module.exports.update_order = update_order;
 module.exports.update_book = update_book;
 module.exports.update_price = update_price;
+module.exports.update_bookstore = update_bookstore;
+module.exports.update_qcount = update_qcount;

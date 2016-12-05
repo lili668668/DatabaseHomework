@@ -459,6 +459,17 @@ function memeber_get_order(account, callback) {
         });
 }
 
+function account_get_ordercount(account, callback) {
+    
+    var sql = `select count(${con.sOrderNo}) as qcount from [${con.sRoot}].[${con.sDbo}].[${con.sOrder}] where ${con.sAccount} = '${account}';`;
+
+    set(sql, function(rows){
+        if (callback) {
+            callback(rows[0]["qcount"]);
+        }
+    });
+}
+
 function getAllBookstores(callback) {
 
     var sql = `select * from [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}];`;
@@ -567,6 +578,7 @@ module.exports.bookstore_get_allBook = bookstore_get_allBook;
 module.exports.book_get_authors = book_get_authors;
 module.exports.author_get_name = author_get_name;
 module.exports.memeber_get_order = memeber_get_order;
+module.exports.account_get_ordercount = account_get_ordercount;
 module.exports.book_exist = book_exist;
 module.exports.book_store_exist = book_store_exist;
 module.exports.account_exist = account_exist;

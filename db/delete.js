@@ -8,6 +8,7 @@ function empty_books_from_order(orderno, callback) {
     var sql = `delete from [${con.sRoot}].[${con.sDbo}].[${con.sOrderBook}] where ${con.sOrderNo} = '${orderno}';`;
 
     set(sql, function(){
+        console.log(sql);
         if (callback) {
             callback();
         }
@@ -181,18 +182,6 @@ function empty_bookstorebooks_from_book(bookid, callback) {
 }
 
 function empty_orders_from_book(bookid, callback) {
-
-    var sql =  `delete from [${con.sRoot}].[${con.sDbo}].[${con.sOrderBook}] where ${con.sBookId} = '${bookid}';`;
-
-    set(sql, function(){
-        if (callback) {
-            callback();
-        }
-    });
-
-}
-
-function empty_books_from_order(bookid, callback) {
 
     var sql =  `delete from [${con.sRoot}].[${con.sDbo}].[${con.sOrderBook}] where ${con.sBookId} = '${bookid}';`;
 

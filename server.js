@@ -317,6 +317,7 @@ app.post('/add_bookstore_process', function(request, response) {
     }
 });
 
+
 app.get('/inquire_book', function(request, response){
     if (request.session.login) {
         db_select.getAllBookstores(function(rows){
