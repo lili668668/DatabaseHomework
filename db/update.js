@@ -41,6 +41,12 @@ function update_orderMan(account, name, ssid, email, ordermanid) {
     update_member(account, name, ssid, email, function(){set(sql);});
 }
 
+function update_password(account, password) {
+
+    var sql = `update ${con.sMember} set ${con.sPassword} = '${password}' where ${con.sAccount} = '${account}';`;
+    set(sql);
+}
+
 function update_order(orderno, account, bsids, bookids, counts, allprice) {
 
     var sql = `update [${con.sRoot}].[${con.sDbo}].[${con.sOrder}] set ${con.sOrderTime} = SYSDATETIME(), ${con.sTotalPrice} = '${allprice}' where ${con.sOrderNo} = '${orderno}' and ${con.sAccount} = '${account}';`;
@@ -146,6 +152,7 @@ module.exports.update_professor = update_professor;
 module.exports.update_ta = update_ta;
 module.exports.update_student = update_student;
 module.exports.update_orderMan = update_orderMan;
+module.exports.update_password = update_password;
 module.exports.update_order = update_order;
 module.exports.update_book = update_book;
 module.exports.update_price = update_price;

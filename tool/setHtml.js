@@ -106,6 +106,7 @@ function setIndexOrderTable(htmlFile, markid, rows) {
             tmptable += s;
         });
 
+        console.log(${element[con.sOrderTime]});
 
         var tmp = `
             <div class="color">

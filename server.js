@@ -729,7 +729,22 @@ app.post('/update_member_process', function(request, response){
 
 });
 
-app.get('/')
+app.get('/update_password', function(request, response) {
+    if (request.session.login) {
+        response.sendFile(__dirname + '/html/update_password.html');
+    } else {
+        response.redirect('/');
+    }
+});
+
+app.post('/update_password_process', function(request, response) {
+    if (request.session.login) {
+        db_update.update_password(request.session.login, request.body.newpassword);
+        response.redirect('/update_member');
+    } else {
+        response.redirect('/');
+    }
+});
 
 app.get('/delete_order', function(request, response){
     if (request.session.login) {
