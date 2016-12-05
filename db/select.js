@@ -9,7 +9,11 @@ function verification_account(account, password, callback) {
 
     set(sql, function(rows){
         if (callback) {
-            callback(password === rows[0][con.sPassword]);
+            if (rows.length == 0) {
+                callback(false);
+            } else {
+                callback(password === rows[0][con.sPassword]);
+            }
         }
     });
 }
