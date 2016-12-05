@@ -156,6 +156,31 @@ function order_info(account, orderno, callback) {
         });
 }
 
+function authors_info(authornames, callback) {
+    var sql = "";
+    authornames.forEach(function(element, index, array){
+        if (index != 0) {
+            sql += " union ";
+        }
+
+        var tmp = `
+            select ${con.sAuthor}.*
+            from [${con.sRoot}].[${con.sDbo}].[${con.sAuthor}] as ${con.sAuthor}
+            where ${con.sAuthor}.${con.sAuthorName} = '${element}' `;
+
+        sql += tmp;
+    });
+    var foot = `;`;
+    sql += foot;
+
+    set(sql, function(rows) {
+        if (callback) {
+            callback(rows);
+        }
+    });
+    
+}
+
 function bsid_booknames_inquire_book(bsid, booknames, callback) {
     var sql = "";
     booknames.forEach(function(element, index, array){
@@ -533,6 +558,7 @@ module.exports.student_info = student_info;
 module.exports.orderMan_info = orderMan_info;
 module.exports.books_info = books_info;
 module.exports.order_info = order_info;
+module.exports.authors_info = authors_info;
 module.exports.bsid_booknames_inquire_book = bsid_booknames_inquire_book;
 module.exports.bsid_inquire_book = bsid_inquire_book;
 module.exports.booknames_inquire_book = booknames_inquire_book;

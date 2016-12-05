@@ -60,32 +60,37 @@ function add_bookstore_book(bookid, bsid, price) {
     set(sql);
 }
 
-// TODO: 需要修改資料
-function add_author(author, bookid, callback) {
+function add_author(author, bookid) {
     var authorlist = tool.split(author, ",");
 
-    authorlist.forEach(function(authorName, index, array){
-        db_select.verification_author(authorName, function(inAuthor, authorid){
-            if (inAuthor) {
-                add_author_book(authorid.trim(), bookid);
-            
-            } else {
-                db_select.getAuthorId(function(authorNo) {
-                    authorNo = authorNo + index;
-
-                    var sql = `insert into ${con.sAuthor}(${con.sAuthorId}, ${con.sAuthorName}) values('A${authorNo}', '${authorName}');`;
-                    set(sql, function(){
-                        add_author_book('A' + authorNo, bookid);
-                        if (callback) {
-                            callback();
+    db_select.authors_info(authorlist, function(rows) {
+        db_select.getAuthorId(function(authorNo) {
+            var cnt = 0;
+            authorlist.forEach(function(element, index, array) {
+                if (element != "" && element) {
+                    var flag = -1;
+                    rows.forEach(function(e, i, a){
+                        if (e["Name"].trim() == element.trim()) {
+                            flag = i;
                         }
                     });
-                });
-            }
+                    if (flag >= 0) {
+                        add_author_book(rows[flag]["AuthorID"], bookid);
+                    } else {
+                        var no = authorNo + cnt;
+                        cnt++;
+
+                        var sql = `insert into ${con.sAuthor}(${con.sAuthorId}, ${con.sAuthorName}) values('A${no}', '${element}');`;
+                        set(sql, function(){
+                            add_author_book('A' + no, bookid);
+                        });
+                    }
+
+                }
+                
+            });
         });
-
     });
-
 }
 
 function add_author_book(authorid, bookid) {
