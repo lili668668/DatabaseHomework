@@ -2,6 +2,7 @@ var fs = require('fs');
 var cheerio = require('cheerio');
 var tool = require('./mytool.js');
 var con = require('../db/dbConst.js');
+var moment = require('moment-timezone');
 
 function setDroplist(htmlFile, droplistId, valueArr, optionArr) {
     var html = fs.readFileSync(htmlFile);
@@ -63,12 +64,13 @@ function setOrderManageTable(htmlFile, markid, rows) {
             tmptable += s;
         });
 
+        var time = moment(element[con.sOrderTime]).tz('Etc/Greenwich').format("YYYY/MM/DD HH:mm:ss");
 
         var tmp = `
             <div class="color">
                 <div class="target">訂單編號: <span class="OrderNo">${element[con.sOrderNo]}</span></div>
                 <div>訂單帳號: <span>${element[con.sAccount]}</span></div>
-                <div>下單時間: <span class="OrderTime">${element[con.sOrderTime]}</span></div>
+                <div>下單時間: <span class="OrderTime">${time}</span></div>
                 <div>總價格: <span class="Total_Price">${element[con.sTotalPrice]}</span></div>
                 <table border="1">
                     <tr>
@@ -105,13 +107,13 @@ function setIndexOrderTable(htmlFile, markid, rows) {
                 `;
             tmptable += s;
         });
-
-        console.log(${element[con.sOrderTime]});
+        
+        var time = moment(element[con.sOrderTime]).tz('Etc/Greenwich').format("YYYY/MM/DD HH:mm:ss");
 
         var tmp = `
             <div class="color">
                 <div class="target">訂單編號: <span class="OrderNo">${element[con.sOrderNo]}</span></div>
-                <div>下單時間: <span class="OrderTime">${element[con.sOrderTime]}</span></div>
+                <div>下單時間: <span class="OrderTime">${time}</span></div>
                 <div>總價格: <span class="Total_Price">${element[con.sTotalPrice]}</span></div>
                 <table border="1">
                     <tr>
