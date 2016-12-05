@@ -101,14 +101,47 @@ function remove_a_professor(account, callback) {
     });
 }
 
-function empty_orders_from_account(account, callback) {
+function empty_orderbooks_from_order(ordernos, callback) {
 
-    var sql =  `delete from [${con.sRoot}].[${con.sDbo}].[${con.sOrder}] where ${con.sAccount} = '${account}';`;
-    
+    var sql = `delete from [${con.sRoot}].[${con.sDbo}].[${con.sOrderBook}] where `;
+
+    ordernos.forEach(function(element, index, array){
+        if (index != 0) {
+            sql += " or ";
+        }
+
+        var tmp = `${con.sOrderBook}.${con.sOrderNo} = '${element}' `;
+
+        sql += tmp;
+    });
+    var foot = ";";
+    sql += foot;
+
     set(sql, function(){
         if (callback) {
             callback();
         }
+    });
+}
+
+function empty_orders_from_account(account, callback) {
+
+    var sql =  `delete from [${con.sRoot}].[${con.sDbo}].[${con.sOrder}] where ${con.sAccount} = '${account}';`;
+
+    db_select.memeber_get_order(account, function(rows){
+        var ordernos = [];
+        rows.forEach(function(element, index, array){
+            ordernos.push(element[con.sOrderNo]);
+        });
+
+        empty_orderbooks_from_order(ordernos, function(){
+            set(sql, function(){
+                if (callback) {
+                    callback();
+                }
+            });
+            
+        });
     });
 }
 
