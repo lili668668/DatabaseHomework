@@ -215,7 +215,7 @@ app.post('/add_book_process', function(request, response){
         }
 
         db_insert.add_book(row.id, row.name, row.price, row.author, row.publisher, row.bookstore);
-        response.redirect('/manage_book');
+        response.redirect('/');
     } else {
         response.redirect('/');
     }
@@ -261,6 +261,16 @@ app.post('/update_book_process', function(request, response) {
         db_update.update_book(row.bookstore, row.id, row.name, row.price, row.author, row.publisher);
         response.redirect('/');
     
+    } else {
+        response.redirect('/');
+    }
+});
+
+app.post('/delete_book', function(request, response) {
+    if (request.session.login) {
+        var id = request.body.id;
+        db_delete.remove_a_book(id);
+        response.redirect('/');
     } else {
         response.redirect('/');
     }
