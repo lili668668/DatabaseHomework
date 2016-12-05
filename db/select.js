@@ -136,6 +136,7 @@ function order_info(account, orderno, callback) {
         `
         select [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo}, 
         [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderTime},
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sAccount},
         ${con.sBookStore}.${con.sBSID}, ${con.sBookStore}.${con.sBSName},
         ${con.sBook}.${con.sBookId}, ${con.sBook}.${con.sBookName},
         ${con.sOrderBook}.${con.sBookCount},
@@ -440,6 +441,7 @@ function memeber_get_order(account, callback) {
         `
         select [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo}, 
         [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderTime},
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sAccount},
         ${con.sBookStore}.${con.sBSID}, ${con.sBookStore}.${con.sBSName},
         ${con.sBook}.${con.sBookId}, ${con.sBook}.${con.sBookName},
         ${con.sOrderBook}.${con.sBookCount},
@@ -496,9 +498,39 @@ function getAllAccounts(callback) {
     });
 }
 
+function bookstore_get_orders(bsid, callback) {
+    var sql = 
+        `
+        select [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo}, 
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderTime},
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sAccount},
+        ${con.sBookStore}.${con.sBSID}, ${con.sBookStore}.${con.sBSName},
+        ${con.sBook}.${con.sBookId}, ${con.sBook}.${con.sBookName},
+        ${con.sOrderBook}.${con.sBookCount},
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sTotalPrice}
+        from [${con.sRoot}].[${con.sDbo}].[${con.sOrder}],
+        [${con.sRoot}].[${con.sDbo}].[${con.sOrderBook}] as ${con.sOrderBook},
+        [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] as ${con.sBookStore},
+        [${con.sRoot}].[${con.sDbo}].[${con.sBook}] as ${con.sBook}
+        where ${con.sOrderBook}.${con.sBSID} = '${bsid}'
+        and ${con.sOrderBook}.${con.sBSID} = ${con.sBookStore}.${con.sBSID}
+        and ${con.sOrderBook}.${con.sBookId} = ${con.sBook}.${con.sBookId}
+        and [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo} = ${con.sOrderBook}.${con.sOrderNo}
+        order by [${con.sRoot}].[${con.sDbo}].[${con.sOrder}].${con.sOrderNo};
+        `;
+
+        set(sql, function(rows) {
+            var list = parseOrderBook(rows);
+            if (callback) {
+                callback(list);
+            }
+        });
+    
+}
+
 function parseOrderBook(rows) {
     var list = [];
-    // var obj = {OrderNo, OrderTime, BSID:[], BSName:[], BookID:[], BookName:[], Book_Count:[], Total_Price};
+    // var obj = {OrderNo, OrderTime, Account, BSID:[], BSName:[], BookID:[], BookName:[], Book_Count:[], Total_Price};
     
     var presame = false;
     var len = rows.length;
@@ -513,6 +545,7 @@ function parseOrderBook(rows) {
             var obj = {};
             obj[con.sOrderNo] = element[con.sOrderNo];
             obj[con.sOrderTime] = element[con.sOrderTime];
+            obj[con.sAccount] = element[con.sAccount];
             obj[con.sBSID] = [element[con.sBSID]];
             obj[con.sBSName] = [element[con.sBSName]];
             obj[con.sBookId] = [element[con.sBookId]];
@@ -593,3 +626,4 @@ module.exports.getOrderNo = getOrderNo;
 module.exports.getBookPrice = getBookPrice;
 module.exports.getAllBookstores = getAllBookstores;
 module.exports.getAllAccounts = getAllAccounts;
+module.exports.bookstore_get_orders = bookstore_get_orders;

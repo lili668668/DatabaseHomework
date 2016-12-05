@@ -413,6 +413,25 @@ app.get('/inquire_book_process', function(request, response) {
     }
 });
 
+app.get('/manage_order', function(request, response){
+    if (request.session.login && request.session.type == 'om') {
+        db_select.orderMan_get_bookstore(request.session.login, function(bookstore){
+            if (bookstore) {
+                db_select.bookstore_get_orders(bookstore["BSID"], function(rows){
+                    var sendstr = render.setOrderManageTable(__dirname + '/html/manage_order.html', "#order_info", rows);
+                    response.send(sendstr);
+                });
+            } else {
+                var sendstr = render.setText(__dirname + '/html/manage_order.html', "#order_info", "無新增書店");
+                response.send(sendstr);
+            }
+            
+        });
+    } else {
+        response.redirect('/');
+    }
+});
+
 app.get('/add_order', function(request, response) {
     if (request.session.login) {
         var bsids = request.session.bsids;
@@ -709,6 +728,8 @@ app.post('/update_member_process', function(request, response){
     response.redirect("/");
 
 });
+
+app.get('/')
 
 app.get('/delete_order', function(request, response){
     if (request.session.login) {

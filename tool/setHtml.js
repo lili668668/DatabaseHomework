@@ -45,6 +45,47 @@ function setTexts(htmlFile, markid, titles, texts) {
     return res;
 }
 
+function setOrderManageTable(htmlFile, markid, rows) {
+
+    var html = fs.readFileSync(htmlFile);
+    var $ = cheerio.load(html);
+
+    var str = "";
+    rows.forEach(function(element, index, array) {
+        var tmptable = "";
+        element[con.sBookName].forEach(function(e, i, a){
+            var s = `
+                <tr>
+                    <td>${e}</td>
+                    <td>${element[con.sBookCount][i]}</td>
+                </tr>
+                `;
+            tmptable += s;
+        });
+
+
+        var tmp = `
+            <div class="color">
+                <div class="target">訂單編號: <span class="OrderNo">${element[con.sOrderNo]}</span></div>
+                <div>訂單帳號: <span>${element[con.sAccount]}</span></div>
+                <div>下單時間: <span class="OrderTime">${element[con.sOrderTime]}</span></div>
+                <div>總價格: <span class="Total_Price">${element[con.sTotalPrice]}</span></div>
+                <table border="1">
+                    <tr>
+                        <th>書名</th>
+                        <th>訂購數量</th>
+                    </tr>
+                    ${tmptable}
+                </table>
+            </div>
+            `;
+        str += tmp;
+    });
+
+    $(markid).append(str);
+    return $.html();
+}
+
 function setIndexOrderTable(htmlFile, markid, rows) {
     
     var html = fs.readFileSync(htmlFile);
@@ -421,6 +462,7 @@ module.exports.setTexts = setTexts;
 module.exports.setShopcarTable = setShopcarTable;
 module.exports.setManageBookTable = setManageBookTable;
 module.exports.setIndexOrderTable = setIndexOrderTable;
+module.exports.setOrderManageTable = setOrderManageTable;
 module.exports.setButton = setButton;
 module.exports.setStatusItem = setStatusItem;
 module.exports.setHTMLButton = setHTMLButton;
