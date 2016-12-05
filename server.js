@@ -160,7 +160,7 @@ app.get('/update_member', function(request, response){
             } else if (stu == "ta") {
                 db_select.ta_info(request.session.login, function(res){
                     fillid.push("#taid", "#room");
-                    content.push(res["Taid"], res["Room"]);
+                    content.push(res["TAID"], res["Room"]);
                     var sendHtml = render.fillBlank(resHTML, fillid, content);
                     response.send(sendHtml);
                 });
@@ -174,6 +174,31 @@ app.get('/update_member', function(request, response){
             }
         });
 
+    } else {
+        response.redirect('/');
+    }
+});
+
+app.get('/delete_member', function(request,response) {
+    if (request.session.login) {
+        db_select.account_info(request.session.login, function(rows) {
+            var stu = rows["Status"];
+
+            if (stu == "pr") {
+                db_delete.remove_a_professor(request.session.login);
+                response.redirect('/logout');
+            } else if (stu == "st") {
+                db_delete.remove_a_student(request.session.login);
+                response.redirect('/logout');
+            } else if (stu == "ta") {
+                db_delete.remove_a_ta(request.session.login);
+                response.redirect('/logout');
+            } else if (stu == "om") {
+                db_delete.remove_a_orderman(request.session.login);
+                response.redirect('/logout');
+            }
+        });
+        
     } else {
         response.redirect('/');
     }
@@ -310,13 +335,47 @@ app.post('/add_bookstore_process', function(request, response) {
             response.redirect('/manage_bookstore');
         } else {
             db_insert.add_bookstore(row.id, row.name, row.city, row.phone, request.session.login);
-            response.redirect('/manage_bookstore');
+            response.redirect('/');
         }
     } else {
         response.redirect('/');
     }
 });
 
+app.get('/update_bookstore', function(request, response){
+    if (request.session.login && request.session.type == 'om') {
+        db_select.orderMan_get_bookstore(request.session.login, function(row){
+            var id = row["BSID"];
+            var sendstr = render.setText(__dirname + '/html/update_bookstore.html', '#text_id', id);
+            var ids = ["#update_id", "#name", "#city", "#phone", "#delete_id"];
+            var contents = [id, row["BSName"], row["City"], row["BSPhone"], id];
+
+            sendstr = render.fillBlank(sendstr, ids, contents);
+            response.send(sendstr);
+        });
+    } else {
+        response.redirect('/');
+    }
+});
+
+app.post('/delete_bookstore', function(request, response) {
+    if (request.session.login && request.session.type == 'om') {
+        db_delete.remove_bookstore_from_account(request.session.login);
+        response.redirect('/');
+    } else {
+        response.redirect('/');
+    }
+});
+
+app.post('/update_bookstore_process', function(request, response){
+    if (request.session.login && request.session.type == 'om') {
+        var row = request.body;
+        db_update.update_bookstore(row.id, row.name, row.city, row.phone);
+        response.redirect('/');
+    } else {
+        response.redirect('/');
+    }
+});
 
 app.get('/inquire_book', function(request, response){
     if (request.session.login) {
