@@ -207,7 +207,7 @@ app.get('/delete_member', function(request,response) {
 app.get('/manage_book', function(request, response){
     if (request.session.login && request.session.type == 'om') {
         db_select.orderMan_get_bookstore(request.session.login, function(rows){
-            if (rows.length == 0) {
+            if (rows == undefined) {
                 var sendstr = render.setText(__dirname + '/html/manage_book.html', "#books_info", "請新增書店再使用");
                 response.send(sendstr);
             } else {
@@ -316,6 +316,7 @@ app.get('/manage_bookstore', function(request, response) {
                 var titles = ["目前所屬書店:", "書店名稱:", "書店城市:", "書店電話:"];
                 var texts = [row["BSID"], row["BSName"], row["City"], row["BSPhone"]];
                 sendstr = render.setTexts(__dirname + '/html/manage_bookstore.html', '#info', titles, texts);
+                sendstr = render.setHTMLButton(sendstr, '#add_bookstore', "GET", "/update_bookstore", "修改書店");
             } else {
                 sendstr = render.setButton(__dirname + '/html/manage_bookstore.html', '#add_bookstore', "GET", "/add_bookstore", "新增書店");
             }
