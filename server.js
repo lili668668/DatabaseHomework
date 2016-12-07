@@ -207,10 +207,17 @@ app.get('/delete_member', function(request,response) {
 app.get('/manage_book', function(request, response){
     if (request.session.login && request.session.type == 'om') {
         db_select.orderMan_get_bookstore(request.session.login, function(rows){
-            db_select.bookstore_get_allBook(rows["BSID"], function(r){
-                var sendstr = render.setManageBookTable(__dirname + '/html/manage_book.html', "#books_info", r);
+            if (rows.length == 0) {
+                var sendstr = render.setText(__dirname + '/html/manage_book.html', "#books_info", "請新增書店再使用");
                 response.send(sendstr);
-            });
+            } else {
+                db_select.bookstore_get_allBook(rows["BSID"], function(r){
+                    var sendstr = render.setManageBookTable(__dirname + '/html/manage_book.html', "#books_info", r);
+                    sendstr = render.setHTMLButton(sendstr, "#insert", "GET", "/add_book", "新增書籍");
+                    response.send(sendstr);
+                });
+
+            }
         });
     } else {
         response.redirect('/');
