@@ -1,3 +1,7 @@
 .check {
     color: #ff6060;
 }
+
+form {
+    display: inline-block;
+}

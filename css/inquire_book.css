@@ -4,3 +4,7 @@
     right: 0;
     position: fixed;
 }
+
+form {
+    display: inline-block;
+}
