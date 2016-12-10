@@ -133,15 +133,25 @@ function empty_orders_from_account(account, callback) {
         rows.forEach(function(element, index, array){
             ordernos.push(element[con.sOrderNo]);
         });
+        
+        if (ordernos.length > 0) {
+            empty_orderbooks_from_order(ordernos, function(){
+                set(sql, function(){
+                    if (callback) {
+                        callback();
+                    }
+                });
+                
+            });
 
-        empty_orderbooks_from_order(ordernos, function(){
+        } else {
             set(sql, function(){
                 if (callback) {
                     callback();
                 }
             });
-            
-        });
+
+        }
     });
 }
 
@@ -150,14 +160,22 @@ function remove_bookstore_from_account(account, callback) {
     var sql =  `delete from [${con.sRoot}].[${con.sDbo}].[${con.sBookStore}] where ${con.sAccount} = '${account}';`;
 
     db_select.orderMan_get_bookstore(account, function(rows){
-        var bsid = rows["BSID"];
-        empty_books_from_bookstore(bsid, function(){
+        if (rows) {
+            var bsid = rows["BSID"];
+            empty_books_from_bookstore(bsid, function(){
+                set(sql, function(){
+                    if (callback) {
+                        callback();
+                    }
+                });
+            });
+        } else {
             set(sql, function(){
                 if (callback) {
                     callback();
                 }
             });
-        });
+        }
     });
 }
 
