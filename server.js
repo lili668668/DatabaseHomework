@@ -302,7 +302,13 @@ app.post('/delete_book', function(request, response) {
     if (request.session.login && request.session.type == 'om') {
         var id = request.body.id;
         db_select.orderMan_get_bookstore(request.session.login, function(row) {
-            db_delete.remove_a_book(row["BSID"], id);
+            db_select.bookid_get_bookcount(id, function(bcount){
+                if (bcount > 1) {
+                    db_delete.empty_bookstorebooks_from_book(row["BSID"], id);
+                } else {
+                    db_delete.remove_a_book(row["BSID"], id);
+                }
+            });
         });
         response.redirect('/');
     } else {
