@@ -299,9 +299,11 @@ app.post('/update_book_process', function(request, response) {
 });
 
 app.post('/delete_book', function(request, response) {
-    if (request.session.login) {
+    if (request.session.login && request.session.type == 'om') {
         var id = request.body.id;
-        db_delete.remove_a_book(id);
+        db_select.orderMan_get_bookstore(request.session.login, function(row) {
+            db_delete.remove_a_book(row["BSID"], id);
+        });
         response.redirect('/');
     } else {
         response.redirect('/');

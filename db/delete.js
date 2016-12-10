@@ -184,11 +184,11 @@ function empty_books_from_bookstore(bsid, callback) {
     });
 }
 
-function remove_a_book(bookid, callback) {
+function remove_a_book(bsid, bookid, callback) {
 
     var sql =  `delete from [${con.sRoot}].[${con.sDbo}].[${con.sBook}] where ${con.sBookId} = '${bookid}';`;
 
-    empty_bookstorebooks_from_book(bookid, function(){
+    empty_bookstorebooks_from_book(bsid, bookid, function(){
         empty_authorbooks_from_book(bookid, function(){
             set(sql, function(){
                 if (callback) {
@@ -200,11 +200,11 @@ function remove_a_book(bookid, callback) {
     });
 }
 
-function empty_bookstorebooks_from_book(bookid, callback) {
+function empty_bookstorebooks_from_book(bsid, bookid, callback) {
 
-    var sql =  `delete from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBookId} = '${bookid}';`;
+    var sql =  `delete from [${con.sRoot}].[${con.sDbo}].[${con.sBookStoreBook}] where ${con.sBSID} = '${bsid}' and  ${con.sBookId} = '${bookid}';`;
 
-    empty_orders_from_book(bookid, function(){
+    empty_orders_from_book(bsid, bookid, function(){
         set(sql, function(){
             if (callback) {
                 callback();
@@ -214,9 +214,9 @@ function empty_bookstorebooks_from_book(bookid, callback) {
 
 }
 
-function empty_orders_from_book(bookid, callback) {
+function empty_orders_from_book(bsid, bookid, callback) {
 
-    var sql =  `delete from [${con.sRoot}].[${con.sDbo}].[${con.sOrderBook}] where ${con.sBookId} = '${bookid}';`;
+    var sql =  `delete from [${con.sRoot}].[${con.sDbo}].[${con.sOrderBook}] where ${con.sBSID} = '${bsid}' and  ${con.sBookId} = '${bookid}';`;
 
     set(sql, function(){
         if (callback) {
